@@ -25,6 +25,15 @@ gym = ["gymnasium>=0.29.0"]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "pytest-json-report>=1.5", "ruff>=0.3.0"]
 all = ["mock-gmail[mcp,gym,dev]"]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-json-report>=1.5",
+    "pyjwt>=2.8",
+    "cryptography>=43.0",
+]
+
 [project.scripts]
 mock-gmail = "mock_gmail.cli:cli"
 

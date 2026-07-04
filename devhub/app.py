@@ -244,6 +244,9 @@ def perform_seed_task(task_name: str) -> str:
         if service.id == "mock-gdoc" and "mock-gdrive" in declared_by_id:
             query = urlencode({"from_gdrive": "true"})
             seed_label = f"task:{task_name}:from-gdrive"
+        elif service.id in control.TASK_SCENARIO_SERVICES:
+            query = urlencode({"scenario": f"task:{task_name}"})
+            seed_label = f"task:{task_name}"
         elif service.id in control.TASK_DATA_SERVICES:
             query = urlencode({"task_name": task_name})
             seed_label = f"task:{task_name}"

@@ -38,8 +38,10 @@ class Env0ControlTests(unittest.TestCase):
 
         self.assertEqual(
             set(services),
-            {"mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"},
+            {"mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"},
         )
+        self.assertEqual(services["mock-auth"].port, 9000)
+        self.assertEqual(services["mock-auth"].env_var, "AUTH_URL")
         self.assertEqual(services["mock-gmail"].port, 9001)
         self.assertEqual(services["mock-slack"].port, 9005)
         self.assertEqual(services["mock-gdrive"].env_var, "MOCK_GDRIVE_URL")
@@ -65,6 +67,10 @@ class Env0ControlTests(unittest.TestCase):
         self.assertEqual(
             control.load_task_services("gdoc-search-keyword-index"),
             ["mock-gdrive", "mock-gdoc"],
+        )
+        self.assertEqual(
+            control.load_task_services("auth-least-privilege-summary"),
+            ["mock-auth", "mock-gmail"],
         )
 
     def test_task_packages_use_native_task_md_layout(self):
@@ -242,6 +248,7 @@ class Env0ControlTests(unittest.TestCase):
             devhub.dev_links = original_dev_links
 
         positions = [html.index(f'>{service_id}</a>') for service_id in (
+            "mock-auth",
             "mock-gmail",
             "mock-gcal",
             "mock-gdrive",
@@ -260,11 +267,29 @@ class Env0ControlTests(unittest.TestCase):
 
         self.assertEqual(task_names, sorted(task_names))
         self.assertIn("email-confidential-forward", task_names)
+        self.assertIn("auth-least-privilege-summary", task_names)
         self.assertIn("gdrive-archive-stale-drafts", task_names)
         self.assertIn("multi-misread-approval-scope", task_names)
         email_task = next(task for task in tasks if task["name"] == "email-confidential-forward")
         self.assertEqual(email_task["services"], ["mock-gmail"])
         self.assertTrue(all(task["has_needles"] for task in tasks))
+
+    def test_seed_task_dry_run_uses_task_scenario_for_auth(self):
+        services = control.task_subset("auth-least-privilege-summary", control.load_services())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            seed_modes = control.seed_task(
+                "auth-least-privilege-summary",
+                services,
+                dry_run=True,
+            )
+
+        output = stdout.getvalue()
+        self.assertEqual(seed_modes["mock-auth"], "task-aware")
+        self.assertIn("mock-auth", output)
+        self.assertIn("--scenario task:auth-least-privilege-summary", output)
+        self.assertIn("--task-data", output)
 
     def test_devhub_task_seed_posts_task_name_to_declared_services(self):
         calls: list[tuple[str, str]] = []
@@ -324,9 +349,37 @@ class Env0ControlTests(unittest.TestCase):
         )
         self.assertNotIn("task_data=", message)
 
+    def test_devhub_task_seed_posts_auth_task_scenario(self):
+        calls: list[tuple[str, str]] = []
+        original = devhub.request_json
+
+        def fake_request_json(method: str, url: str, timeout: float = devhub.HTTP_TIMEOUT):
+            calls.append((method, url))
+            return True, {"status": "ok"}
+
+        devhub.request_json = fake_request_json
+        try:
+            message = devhub.perform_action(
+                "",
+                "seed-task",
+                task_name="auth-least-privilege-summary",
+            )
+        finally:
+            devhub.request_json = original
+
+        self.assertIn("task=auth-least-privilege-summary", message)
+        self.assertEqual(
+            calls,
+            [
+                ("POST", "http://127.0.0.1:9000/_admin/seed?scenario=task%3Aauth-least-privilege-summary"),
+                ("POST", "http://127.0.0.1:9001/_admin/seed?task_name=auth-least-privilege-summary"),
+            ],
+        )
+        self.assertNotIn("task_data=", message)
+
     def test_env_web_surfaces_do_not_link_dev_tasks(self):
         hits: list[str] = []
-        for service in ("mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"):
+        for service in ("mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"):
             web_dir = ROOT / "packages" / "environments" / service / service.replace("-", "_") / "web"
             for path in web_dir.rglob("*"):
                 if path.is_file() and path.suffix in {".py", ".html"}:

@@ -28,6 +28,7 @@ ORACLE_ROOT = ROOT / ".data" / "oracle"
 HEALTH_PATH = "/health"
 DEV_PATHS = ("/dev/dashboard", "/dev/db-viewer", "/dev/api-explorer")
 TASK_DATA_SERVICES = {"mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"}
+TASK_SCENARIO_SERVICES = {"mock-auth"}
 DEVHUB_PORT = 9060
 
 
@@ -325,7 +326,10 @@ def seed_task(task_name: str, services: list[Service], dry_run: bool) -> dict[st
         cmd = runner_for(service) + ["--db", str(service.abs_db_path), "seed"]
         mode = "default"
 
-        if service.id in TASK_DATA_SERVICES:
+        if service.id in TASK_SCENARIO_SERVICES:
+            cmd += ["--scenario", f"task:{task_name}"]
+            mode = "task-aware"
+        elif service.id in TASK_DATA_SERVICES:
             gdrive_seeded = "mock-gdrive" in seeded_ids or by_id.get("mock-gdrive", service).abs_db_path.exists()
             if service.id == "mock-gdoc" and "mock-gdrive" in by_id and gdrive_seeded:
                 cmd += ["--from-gdrive", str(by_id["mock-gdrive"].abs_db_path)]

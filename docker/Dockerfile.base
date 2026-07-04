@@ -5,11 +5,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && \
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     mv /root/.local/bin/uv /usr/local/bin/uv
 RUN uv pip install --system setuptools wheel
+COPY packages/environments/mock-auth /tmp/deps/mock-auth
 COPY packages/environments/mock-gcal /tmp/deps/mock-gcal
 COPY packages/environments/mock-gdoc /tmp/deps/mock-gdoc
 COPY packages/environments/mock-gdrive /tmp/deps/mock-gdrive
 COPY packages/environments/mock-gmail /tmp/deps/mock-gmail
 COPY packages/environments/mock-slack /tmp/deps/mock-slack
+COPY packages/auth-client /tmp/deps/auth-client
 RUN for pkg in /tmp/deps/*/; do \
       uv pip install --system --no-build-isolation "$pkg"; \
     done && rm -rf /tmp/deps && \
@@ -59,6 +61,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Service URLs generated from config.toml (SSOT).
 COPY config.toml /etc/env0/config.toml
+ENV AUTH_URL=http://localhost:9000
 ENV MOCK_GCAL_URL=http://localhost:9002
 ENV MOCK_GDOC_URL=http://localhost:9004
 ENV MOCK_GDRIVE_URL=http://localhost:9003

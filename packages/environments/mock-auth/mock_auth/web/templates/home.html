@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}auth — Mock OAuth2/OIDC{% endblock %}
+{% block content %}
+  <h1>Mock OAuth2/OIDC server</h1>
+  {% if user %}
+    <div class="user-chip">Signed in as {{ user.email }}</div>
+    <form method="post" action="/web/logout"><button class="secondary">Sign out</button></form>
+  {% else %}
+    <div class="subtitle"><a href="/web/login">Sign in</a> (demo password: password123)</div>
+  {% endif %}
+  <h1 style="font-size:18px">Users</h1>
+  <table>
+    <tr><th>id</th><th>email</th><th>name</th></tr>
+    {% for u in users %}
+      <tr><td>{{ u.id }}</td><td>{{ u.email }}</td><td>{{ u.display_name }}</td></tr>
+    {% endfor %}
+  </table>
+  <h1 style="font-size:18px">OAuth clients</h1>
+  <table>
+    <tr><th>client_id</th><th>name</th><th>type</th></tr>
+    {% for c in clients %}
+      <tr><td>{{ c.client_id }}</td><td>{{ c.client_name }}</td><td>{{ c.client_type }}</td></tr>
+    {% endfor %}
+  </table>
+  <div class="subtitle" style="margin-top:16px">
+    Discovery: <a href="/.well-known/openid-configuration">/.well-known/openid-configuration</a>
+  </div>
+{% endblock %}

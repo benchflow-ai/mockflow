@@ -29,6 +29,7 @@ build_image() {
 
 service_db_path() {
   case "$1" in
+    mock-auth) echo "/data/auth.db" ;;
     mock-gmail) echo "/data/gmail.db" ;;
     mock-gcal) echo "/data/gcal.db" ;;
     mock-gdrive) echo "/data/gdrive.db" ;;
@@ -40,6 +41,7 @@ service_db_path() {
 
 service_port() {
   case "$1" in
+    mock-auth) echo "9000" ;;
     mock-gmail) echo "9001" ;;
     mock-gcal) echo "9002" ;;
     mock-gdrive) echo "9003" ;;
@@ -97,6 +99,7 @@ smoke_task() {
 cd "$ROOT"
 
 smoke_task email-confidential-forward mock-gmail
+smoke_task auth-least-privilege-summary mock-auth mock-gmail
 smoke_task gdrive-archive-stale-drafts mock-gdrive
 smoke_task gdoc-search-keyword-index mock-gdrive mock-gdoc
 smoke_task multi-mail-cal-sync mock-gmail mock-gcal

@@ -1,0 +1,46 @@
+{
+  "note": "Ground truth: Google's OAuth2/OIDC endpoint surface (accounts.google.com + oauth2.googleapis.com + openidconnect.googleapis.com), mapped to auth's mock paths. Introspection is a auth extension (RFC 7662) — real Google only offers tokeninfo.",
+  "resources": {
+    "Discovery": {
+      "endpoints": [
+        {"id": "oauth2.discovery.openidConfiguration", "method": "GET", "path": "/.well-known/openid-configuration"},
+        {"id": "oauth2.certs.jwks", "method": "GET", "path": "/oauth2/v3/certs"}
+      ]
+    },
+    "Authorization": {
+      "endpoints": [
+        {"id": "oauth2.auth.authorize", "method": "GET", "path": "/o/oauth2/v2/auth"},
+        {"id": "oauth2.auth.consentCallback", "method": "POST", "path": "/o/oauth2/v2/auth/callback"}
+      ]
+    },
+    "Token": {
+      "endpoints": [
+        {"id": "oauth2.token.exchange", "method": "POST", "path": "/oauth2/token"},
+        {"id": "oauth2.token.refresh", "method": "POST", "path": "/oauth2/token"},
+        {"id": "oauth2.token.clientCredentials", "method": "POST", "path": "/oauth2/token"},
+        {"id": "oauth2.token.deviceCode", "method": "POST", "path": "/oauth2/token"}
+      ]
+    },
+    "Introspection": {
+      "endpoints": [
+        {"id": "oauth2.introspect", "method": "POST", "path": "/oauth2/introspect"}
+      ]
+    },
+    "Revocation": {
+      "endpoints": [
+        {"id": "oauth2.revoke", "method": "POST", "path": "/oauth2/revoke"}
+      ]
+    },
+    "UserInfo": {
+      "endpoints": [
+        {"id": "oauth2.userinfo.get", "method": "GET", "path": "/oauth2/v2/userinfo"},
+        {"id": "oauth2.userinfo.post", "method": "POST", "path": "/oauth2/v2/userinfo"}
+      ]
+    },
+    "DeviceAuthorization": {
+      "endpoints": [
+        {"id": "oauth2.device.code", "method": "POST", "path": "/oauth2/device/code"}
+      ]
+    }
+  }
+}

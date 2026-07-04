@@ -10,6 +10,11 @@
 [runtime]
 version = 1
 
+[mock-auth]
+port = 9000
+db_path = "/data/auth.db"
+env_var = "AUTH_URL"
+
 [mock-gmail]
 port = 9001
 db_path = "/data/gmail.db"

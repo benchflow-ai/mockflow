@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}auth{% endblock %}</title>
+  <style>
+    :root { --blue: #1a73e8; --gray: #5f6368; --border: #dadce0; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Google Sans', Roboto, Arial, sans-serif; background: #fff;
+           color: #202124; margin: 0; display: flex; justify-content: center; }
+    .card { width: 100%; max-width: 450px; border: 1px solid var(--border);
+            border-radius: 8px; margin-top: 48px; padding: 48px 40px 36px; }
+    h1 { font-size: 24px; font-weight: 400; margin: 16px 0 8px; }
+    .subtitle { color: var(--gray); font-size: 15px; margin-bottom: 24px; }
+    .logo { font-weight: 700; color: var(--blue); font-size: 22px; letter-spacing: -0.5px; }
+    input[type=email], input[type=password], input[type=text] {
+      width: 100%; padding: 13px 15px; font-size: 16px; border: 1px solid var(--border);
+      border-radius: 4px; margin-bottom: 16px; }
+    button { border: none; border-radius: 4px; padding: 10px 24px; font-size: 14px;
+             font-weight: 500; cursor: pointer; }
+    .primary { background: var(--blue); color: #fff; }
+    .secondary { background: #fff; color: var(--blue); border: 1px solid var(--border); }
+    .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+    .scope-list { list-style: none; padding: 0; margin: 16px 0; }
+    .scope-list li { padding: 10px 0; border-bottom: 1px solid var(--border);
+                     font-size: 14px; }
+    .scope-list code { color: var(--gray); font-size: 12px; display: block; }
+    .error { color: #d93025; font-size: 14px; margin-bottom: 16px; }
+    .user-chip { display: inline-block; border: 1px solid var(--border);
+                 border-radius: 16px; padding: 4px 12px; font-size: 14px;
+                 color: var(--gray); margin-bottom: 16px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">auth</div>
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

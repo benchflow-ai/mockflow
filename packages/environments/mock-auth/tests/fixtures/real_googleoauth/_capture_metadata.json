@@ -1,0 +1,24 @@
+{
+  "captured_at": "2026-06-10T10:56:20.791450+00:00",
+  "account": "none (public endpoints only; no Google account/credentials used)",
+  "api_version": "v2/v3 (accounts.google.com, oauth2.googleapis.com, openidconnect.googleapis.com)",
+  "api_base": "https://accounts.google.com",
+  "auth_method": "none \u2014 unauthenticated public endpoints + authored shapes",
+  "capture_script": "scripts/capture_fixtures.py",
+  "fixture_count": 12,
+  "note": "auth mocks Google's OAuth2/OIDC surface. Success responses for token/userinfo/device flows require real OAuth client credentials, which this repo does not have for Google auth; those fixtures are AUTHORED from Google's public documentation response shapes and clearly marked below.",
+  "method_per_file": {
+    "openid_configuration.json": "LIVE capture: GET https://accounts.google.com/.well-known/openid-configuration (no auth needed)",
+    "jwks.json": "LIVE capture: GET https://www.googleapis.com/oauth2/v3/certs (no auth needed)",
+    "token_error_no_client.json": "LIVE capture: POST https://oauth2.googleapis.com/token with no client (400)",
+    "tokeninfo_error_invalid.json": "LIVE capture: GET https://oauth2.googleapis.com/tokeninfo?access_token=invalid (400)",
+    "userinfo_error_invalid_credentials.json": "LIVE capture: GET https://openidconnect.googleapis.com/v1/userinfo with Bearer invalid (401)",
+    "device_code_error_invalid_client.json": "LIVE capture: POST https://oauth2.googleapis.com/device/code with bogus client_id (401)",
+    "revoke_error_invalid_token.json": "LIVE capture: POST https://oauth2.googleapis.com/revoke with token=invalid (400)",
+    "token_response.json": "AUTHORED from https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code (needs real creds to capture)",
+    "token_refresh_response.json": "AUTHORED from https://developers.google.com/identity/protocols/oauth2/web-server#offline (needs real creds to capture)",
+    "userinfo.json": "AUTHORED from https://developers.google.com/identity/openid-connect/openid-connect#obtainuserinfo (needs real creds to capture)",
+    "device_code_response.json": "AUTHORED from https://developers.google.com/identity/protocols/oauth2/limited-input-device#step-2 (needs real client_id to capture)",
+    "token_error_invalid_grant.json": "AUTHORED from RFC 6749 / Google token endpoint documented error shape"
+  }
+}
