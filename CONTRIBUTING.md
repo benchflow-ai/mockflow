@@ -210,10 +210,8 @@ for task in tasks/*; do
 done
 ```
 
-Use the same loop with `env0-mobile/tasks-eval`,
-`env0-mobile/tasks-train`, or `env0-mobile/tasks-train-mini` when validating
-those copied corpora. These checks require the BenchFlow CLI and validate
-copied task packages structurally only.
+These checks require the BenchFlow CLI and validate copied task packages
+structurally only.
 
 End-to-end evaluation of copied downstream task packages may also require the
 upstream `ghcr.io/benchflow-ai/env-0-base:latest` image because those packages

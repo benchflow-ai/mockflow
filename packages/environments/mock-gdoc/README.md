@@ -37,8 +37,8 @@ Commands:
 
 | Scenario | Description |
 |----------|-------------|
-| `default` | ~80 documents (hand-written + generated) |
-| `long_context` | ~3000 documents for stress testing |
+| `default` | 16 hand-written documents (5 meeting notes, 3 specs, 3 personal, 3 shared, 2 templates) with comments and permissions |
+| `long_context` | 3000 documents (the 16 hand-written docs + generated filler) for search/pagination stress testing |
 | `task:<name>` | Task-specific needle documents + filler |
 
 ## API Endpoints

@@ -21,7 +21,11 @@
 
 ## batchUpdate Coverage
 
-Our mock implements **all 37** request types from the real Google Docs API `batchUpdate` endpoint, plus 3 mock-only helpers for seed data:
+Our mock implements **37 of the 40** request types from the real Google Docs API
+`batchUpdate` endpoint, plus 3 mock-only helpers for seed data. The 3 real request
+types not yet implemented are `insertDate`, `insertRichLink`, and
+`updateNamedStyle` (absent from the `_HANDLERS` dispatch table in
+`mock_gdoc/api/documents.py`).
 
 ### Text editing
 `insertText`, `deleteContentRange`, `replaceAllText`
@@ -146,7 +150,7 @@ New documents are created with realistic `documentStyle` and `namedStyles` match
 - **Stateful mock, not replay**: Full CRUD with persistent SQLite, enabling multi-step agent workflows
 - **Dual API surface**: Docs API v1 (`/v1/documents`) for CRUD + Drive API v3 (`/drive/v3/files`) for listing, matching real Google API architecture
 - **Index-aware body engine**: Pure-function `body_ops.py` module preserves rich content (styles, tables, images, equations) across all mutations — no more flatten-to-text
-- **All 37 batchUpdate types**: Complete coverage of the Google Docs API request union
+- **37 of 40 batchUpdate types**: Near-complete coverage of the Google Docs API request union (missing `insertDate`, `insertRichLink`, `updateNamedStyle`)
 - **Multi-user**: Resolved via `X-Mock-Gdoc-User` header
 - **Task-specific seeding**: `seed --scenario task:<name>` loads needle documents from `tasks/<name>/data/needles.py` plus filler docs
 - **API parity**: Only real Google Docs API endpoints are exposed. Listing is done via Drive (`/drive/v3/files`), and deletion via Drive `files.delete`, matching the real API surface

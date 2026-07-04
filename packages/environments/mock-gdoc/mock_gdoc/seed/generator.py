@@ -24,6 +24,11 @@ from mock_gdoc.models import (
 from mock_gdoc.state.snapshots import take_snapshot
 from mock_gdoc.seed.body_builder import text_to_body, extract_plain_text
 from mock_gdoc.seed.content import USER_EMAIL, USER_NAME, ALL_DOCUMENTS, PERSONAS
+from mock_gdoc.seed.filler import generate_filler_documents
+
+# Target document count for the long_context scenario: the full handwritten
+# library plus generated filler up to this total (search/pagination stress test).
+LONG_CONTEXT_TARGET_DOCS = 3000
 
 
 def seed_database(
@@ -98,7 +103,7 @@ def seed_database(
 
 
 def _seed_default(db, fake: Faker, user: User, persona_users: dict) -> dict:
-    """Seed ~80 documents from the content library with comments and permissions."""
+    """Seed the 16 handwritten library documents with comments and permissions."""
     now = datetime.now(timezone.utc)
     doc_count = 0
     doc_ids = []
@@ -184,18 +189,39 @@ def _seed_default(db, fake: Faker, user: User, persona_users: dict) -> dict:
     return {"users": total_users, "documents": doc_count, "comments": comment_count, "permissions": perm_count}
 
 
-def _seed_long_context(db, fake: Faker, user: User, persona_users: dict) -> dict:
-    """Seed ~3000 documents for stress testing.
+def _seed_long_context(
+    db,
+    fake: Faker,
+    user: User,
+    persona_users: dict,
+    target_count: int = LONG_CONTEXT_TARGET_DOCS,
+) -> dict:
+    """Seed ``target_count`` documents for search/pagination stress testing.
 
-    No comments or permissions are seeded — this scenario focuses on document volume.
+    The full handwritten library is seeded first, then generated filler
+    documents (realistic standups, specs, postmortems, etc.) fill the rest up
+    to ``target_count``. No comments or permissions are seeded — this scenario
+    focuses on document volume.
     """
     now = datetime.now(timezone.utc)
     doc_count = 0
 
-    # Include all handwritten content
+    # Include all handwritten content first.
     for doc_data in ALL_DOCUMENTS:
         doc_count += 1
         _create_document_from_data(db, user, doc_data, now)
+
+    # Fill the remainder with generated filler documents.
+    remaining = max(0, target_count - doc_count)
+    for filler in generate_filler_documents(remaining, random, fake):
+        _create_document(
+            db, user,
+            title=filler["title"],
+            body_text=filler["body"],
+            days_ago=filler["days_ago"],
+            now=now,
+        )
+        doc_count += 1
 
     total_users = len(persona_users)
     return {"users": total_users, "documents": doc_count}
