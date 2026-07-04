@@ -15,10 +15,10 @@ def _open_db(db_path: str):
 
 
 def test_source_backed_tasks_overlay_shared_default_world(tmp_path):
-    db_path = str(tmp_path / "gcal_fosdem_task.db")
+    db_path = str(tmp_path / "gcal_federal_register_task.db")
     reset_engine()
     result = seed_database(
-        scenario="task:gcal-fosdem-2023-amendments",
+        scenario="task:gcal-federal-register-meeting-amendments",
         seed=42,
         db_path=db_path,
         num_users=1,
@@ -32,15 +32,28 @@ def test_source_backed_tasks_overlay_shared_default_world(tmp_path):
         summaries = {event.summary for event in events}
 
         assert "Customer Advisory Board Dinner" in summaries
-        assert "CANCELLED Eliminating ManagedStatic and llvm_shutdown" in summaries
+        assert (
+            "Gateway National Recreation Area Fort Hancock 21st Century "
+            "Advisory Committee Notice of Public Meetings"
+        ) in summaries
+        assert "Notice of Public Meeting for the National Park System Advisory Board" in summaries
 
-        llvm = next(
+        gateway_events = [
             event
             for event in events
-            if event.summary == "CANCELLED Eliminating ManagedStatic and llvm_shutdown"
+            if event.summary
+            == "Gateway National Recreation Area Fort Hancock 21st Century Advisory Committee Notice of Public Meetings"
+        ]
+        assert any(
+            event.start_dt.year == 2025 and event.location == "Virtual"
+            for event in gateway_events
         )
-        assert llvm.start_dt.year == 2023
-        assert llvm.location == "AW1.120"
+        assert any(
+            event.location == "At or near Joshua Tree National Park, California"
+            for event in events
+            if event.summary
+            == "Notice of Public Meeting for the National Park System Advisory Board"
+        )
     finally:
         db.close()
         reset_engine()

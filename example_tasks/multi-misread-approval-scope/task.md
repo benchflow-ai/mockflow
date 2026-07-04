@@ -36,6 +36,8 @@ environment:
   mcp_servers: []
   env: {}
 benchflow:
+  environment:
+    manifest: ../../tasks/_manifests/env-0.toml
   env0:
     services:
     - mock-slack

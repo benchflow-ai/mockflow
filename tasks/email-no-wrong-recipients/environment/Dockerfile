@@ -1,16 +1,16 @@
-FROM ghcr.io/benchflow-ai/env-0-base:latest
+FROM ghcr.io/benchflow-ai/env0:0.1.0
 
 # Seed data
 COPY tasks/email-no-wrong-recipients/data /tasks/email-no-wrong-recipients/data
 ENV TASKS_DIR=/tasks
 
-RUN gmail --db /data/gmail.db seed --scenario task:email-no-wrong-recipients
+RUN mock-gmail --db /data/gmail.db seed --scenario task:email-no-wrong-recipients
 
 # Create log dirs expected by Harbor verifier/agent
 RUN mkdir -p /logs/verifier /logs/agent /logs/artifacts
 
-# Grant agent write access to its log dirs (env source lives in env-0-base)
+# Grant agent write access to its log dirs (env source lives in env0)
 RUN chown agent:agent /logs/agent /logs/artifacts
 
-# NOTE: Daytona doesn't run CMD/ENTRYPOINT. gmail is started via
-# the env-0 runner AGENT_START hook.
+# NOTE: Daytona doesn't run CMD/ENTRYPOINT. mock-gmail is started via
+# the env0 runner AGENT_START hook.

@@ -1,13 +1,11 @@
-# env-0 Environment-plane manifest (benchflow >= v0.6).
+# env0 Environment-plane manifest (benchflow >= v0.6).
 #
-# One manifest serves the whole benchmark — the same pattern as benchflow's
-# env-0 task runtime: per-task images build FROM the shared
-# base, bake their seed data at build time, and ship no service-starting
-# entrypoint. benchflow's ManifestEnvironment reads this file, probes each
-# service's CLI with `--help`, and starts ONLY the services actually installed
-# in the per-task image — so declaring the full catalog here is safe for
-# single- and multi-env tasks alike. The agent is gated on each started
-# service's /health before it runs.
+# One manifest serves the public mock-env task runtime: per-task images build
+# FROM the shared public env0 base, bake their seed data at build time, and
+# ship no service-starting entrypoint. benchflow's ManifestEnvironment reads
+# this file, probes each service's CLI with `--help`, and starts only the
+# services installed in the task image.
+# The agent is gated on each started service's /health before it runs.
 #
 # Ports and db paths mirror the repo-root config.toml (the single source of
 # truth for service ports) — keep the two in sync.
@@ -21,8 +19,8 @@
 #      to `bench eval run` (the flag wins over frontmatter pointers).
 
 [environment]
-name           = "env-0"
-base_image     = "ghcr.io/benchflow-ai/env-0-base:latest"
+name           = "env0"
+base_image     = "ghcr.io/benchflow-ai/env0:0.1.0"
 owns_lifecycle = false        # images have no service entrypoint; the framework starts [[services]]
 isolation      = "per_task"
 
@@ -33,37 +31,26 @@ mechanism = "image"           # per-task images bake their seed data at build ti
 timeout_sec = 60
 
 [[environment.services]]
-name    = "auth"
-command = "auth --db /data/auth.db serve --host 0.0.0.0 --port 9000 --no-mcp"
-port    = 9000
-
-[[environment.services]]
-name    = "gmail"
-command = "gmail --db /data/gmail.db serve --host 0.0.0.0 --port 9001 --no-mcp"
+name    = "mock-gmail"
+command = "mock-gmail --db /data/gmail.db serve --host 0.0.0.0 --port 9001 --no-mcp"
 port    = 9001
 
 [[environment.services]]
-name    = "slack"
-command = "slack --db /data/slack.db serve --host 0.0.0.0 --port 9002 --no-mcp"
+name    = "mock-gcal"
+command = "mock-gcal --db /data/gcal.db serve --host 0.0.0.0 --port 9002 --no-mcp"
 port    = 9002
 
 [[environment.services]]
-name    = "gcal"
-command = "gcal --db /data/gcal.db serve --host 0.0.0.0 --port 9003 --no-mcp"
+name    = "mock-gdrive"
+command = "mock-gdrive --db /data/gdrive.db serve --host 0.0.0.0 --port 9003 --no-mcp"
 port    = 9003
 
 [[environment.services]]
-name    = "gdoc"
-command = "gdoc --db /data/gdoc.db serve --host 0.0.0.0 --port 9004 --no-mcp"
+name    = "mock-gdoc"
+command = "mock-gdoc --db /data/gdoc.db serve --host 0.0.0.0 --port 9004 --no-mcp"
 port    = 9004
 
 [[environment.services]]
-name    = "gdrive"
-command = "gdrive --db /data/gdrive.db serve --host 0.0.0.0 --port 9005 --no-mcp"
+name    = "mock-slack"
+command = "mock-slack --db /data/slack.db serve --host 0.0.0.0 --port 9005 --no-mcp"
 port    = 9005
-
-# 9006 is informally used by discord (not yet registered in config.toml).
-[[environment.services]]
-name    = "stripe"
-command = "stripe --db /data/stripe.db serve --host 0.0.0.0 --port 9007 --no-mcp"
-port    = 9007
