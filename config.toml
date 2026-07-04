@@ -43,3 +43,8 @@ gws_service = "docs"
 port = 9005
 db_path = "/data/slack.db"
 env_var = "MOCK_SLACK_URL"
+
+[mock-stripe]
+port = 9007
+db_path = "/data/stripe.db"
+env_var = "STRIPE_URL"

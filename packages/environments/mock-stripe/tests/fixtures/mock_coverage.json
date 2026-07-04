@@ -1,0 +1,689 @@
+{
+  "endpoints": [
+    {
+      "id": "customers.create",
+      "resource": "Customers",
+      "method": "POST",
+      "path": "/v1/customers",
+      "implemented": true,
+      "fixture": "customer_create.json",
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_create_minimal",
+        "tests/test_conformance.py::TestCustomerConformance::test_customer_create_shape"
+      ]
+    },
+    {
+      "id": "customers.retrieve",
+      "resource": "Customers",
+      "method": "GET",
+      "path": "/v1/customers/{id}",
+      "implemented": true,
+      "fixture": "customer_retrieve.json",
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_retrieve",
+        "tests/test_conformance.py::TestCustomerConformance::test_customer_retrieve_shape"
+      ]
+    },
+    {
+      "id": "customers.update",
+      "resource": "Customers",
+      "method": "POST",
+      "path": "/v1/customers/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_update",
+        "tests/test_api.py::TestCustomers::test_update_metadata_merge_and_unset"
+      ]
+    },
+    {
+      "id": "customers.delete",
+      "resource": "Customers",
+      "method": "DELETE",
+      "path": "/v1/customers/{id}",
+      "implemented": true,
+      "fixture": "customer_delete.json",
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_delete",
+        "tests/test_conformance.py::TestCustomerConformance::test_customer_delete_shape"
+      ]
+    },
+    {
+      "id": "customers.list",
+      "resource": "Customers",
+      "method": "GET",
+      "path": "/v1/customers",
+      "implemented": true,
+      "fixture": "customers_list.json",
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_list_seeded",
+        "tests/test_api.py::TestCustomers::test_list_filter_email",
+        "tests/test_conformance.py::TestCustomerConformance::test_customers_list_shape"
+      ]
+    },
+    {
+      "id": "customers.search",
+      "resource": "Customers",
+      "method": "GET",
+      "path": "/v1/customers/search",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Search API intentionally skipped (see API_NOTES.md)"
+    },
+    {
+      "id": "customers.list_payment_methods",
+      "resource": "Customers",
+      "method": "GET",
+      "path": "/v1/customers/{id}/payment_methods",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestCustomers::test_customer_payment_methods_list"
+      ]
+    },
+    {
+      "id": "payment_intents.create",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents",
+      "implemented": true,
+      "fixture": "payment_intent_create.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_create_minimal",
+        "tests/test_conformance.py::TestPaymentIntentConformance::test_create_shape_strict",
+        "tests/test_api.py::TestSandboxRepoFlow::test_sandbox_repo_flow"
+      ]
+    },
+    {
+      "id": "payment_intents.retrieve",
+      "resource": "PaymentIntents",
+      "method": "GET",
+      "path": "/v1/payment_intents/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_retrieve_includes_client_secret"
+      ]
+    },
+    {
+      "id": "payment_intents.update",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_update_metadata",
+        "tests/test_api.py::TestPaymentIntents::test_update_amount_after_succeeded_400"
+      ]
+    },
+    {
+      "id": "payment_intents.confirm",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/confirm",
+      "implemented": true,
+      "fixture": "payment_intent_confirm.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_confirm_success_automatic_capture",
+        "tests/test_api.py::TestPaymentIntents::test_decline_generic",
+        "tests/test_conformance.py::TestPaymentIntentConformance::test_confirm_shape"
+      ]
+    },
+    {
+      "id": "payment_intents.capture",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/capture",
+      "implemented": true,
+      "fixture": "payment_intent_capture.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_manual_capture_flow",
+        "tests/test_api.py::TestPaymentIntents::test_partial_capture_refunds_remainder",
+        "tests/test_conformance.py::TestPaymentIntentConformance::test_capture_shape"
+      ]
+    },
+    {
+      "id": "payment_intents.cancel",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/cancel",
+      "implemented": true,
+      "fixture": "payment_intent_cancel.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_cancel_requires_payment_method",
+        "tests/test_api.py::TestPaymentIntents::test_cancel_requires_capture_releases_hold",
+        "tests/test_conformance.py::TestPaymentIntentConformance::test_cancel_shape_strict"
+      ]
+    },
+    {
+      "id": "payment_intents.list",
+      "resource": "PaymentIntents",
+      "method": "GET",
+      "path": "/v1/payment_intents",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentIntents::test_list_seeded",
+        "tests/test_api.py::TestPaymentIntents::test_list_filter_customer"
+      ]
+    },
+    {
+      "id": "payment_intents.search",
+      "resource": "PaymentIntents",
+      "method": "GET",
+      "path": "/v1/payment_intents/search",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Search API intentionally skipped (see API_NOTES.md)"
+    },
+    {
+      "id": "payment_intents.increment_authorization",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/increment_authorization",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Incremental authorizations out of scope"
+    },
+    {
+      "id": "payment_intents.apply_customer_balance",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/apply_customer_balance",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Customer cash balance out of scope"
+    },
+    {
+      "id": "payment_intents.verify_microdeposits",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/verify_microdeposits",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "ACH microdeposits out of scope (card-only mock)"
+    },
+    {
+      "id": "payment_methods.create",
+      "resource": "PaymentMethods",
+      "method": "POST",
+      "path": "/v1/payment_methods",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_create_card"
+      ]
+    },
+    {
+      "id": "payment_methods.retrieve",
+      "resource": "PaymentMethods",
+      "method": "GET",
+      "path": "/v1/payment_methods/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_retrieve",
+        "tests/test_api.py::TestPaymentMethods::test_retrieve_virtual_pm_materializes"
+      ]
+    },
+    {
+      "id": "payment_methods.update",
+      "resource": "PaymentMethods",
+      "method": "POST",
+      "path": "/v1/payment_methods/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_update_metadata"
+      ]
+    },
+    {
+      "id": "payment_methods.attach",
+      "resource": "PaymentMethods",
+      "method": "POST",
+      "path": "/v1/payment_methods/{id}/attach",
+      "implemented": true,
+      "fixture": "payment_method_attach.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_attach",
+        "tests/test_conformance.py::TestPaymentMethodConformance::test_attach_shape_strict"
+      ]
+    },
+    {
+      "id": "payment_methods.detach",
+      "resource": "PaymentMethods",
+      "method": "POST",
+      "path": "/v1/payment_methods/{id}/detach",
+      "implemented": true,
+      "fixture": "payment_method_detach.json",
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_detach",
+        "tests/test_conformance.py::TestPaymentMethodConformance::test_detach_shape_strict"
+      ]
+    },
+    {
+      "id": "payment_methods.list",
+      "resource": "PaymentMethods",
+      "method": "GET",
+      "path": "/v1/payment_methods",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPaymentMethods::test_list_by_customer_and_type"
+      ]
+    },
+    {
+      "id": "charges.create",
+      "resource": "Charges",
+      "method": "POST",
+      "path": "/v1/charges",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Legacy Charges API; charges are created via PaymentIntents"
+    },
+    {
+      "id": "charges.retrieve",
+      "resource": "Charges",
+      "method": "GET",
+      "path": "/v1/charges/{id}",
+      "implemented": true,
+      "fixture": "charge.json",
+      "tests": [
+        "tests/test_api.py::TestCharges::test_get_charge_fields",
+        "tests/test_conformance.py::TestChargeConformance::test_charge_shape"
+      ]
+    },
+    {
+      "id": "charges.update",
+      "resource": "Charges",
+      "method": "POST",
+      "path": "/v1/charges/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestCharges::test_update_metadata_and_description"
+      ]
+    },
+    {
+      "id": "charges.capture",
+      "resource": "Charges",
+      "method": "POST",
+      "path": "/v1/charges/{id}/capture",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Legacy capture; use POST /v1/payment_intents/{id}/capture"
+    },
+    {
+      "id": "charges.list",
+      "resource": "Charges",
+      "method": "GET",
+      "path": "/v1/charges",
+      "implemented": true,
+      "fixture": "charges_list.json",
+      "tests": [
+        "tests/test_api.py::TestCharges::test_list_seeded",
+        "tests/test_conformance.py::TestChargeConformance::test_charges_list_shape"
+      ]
+    },
+    {
+      "id": "charges.search",
+      "resource": "Charges",
+      "method": "GET",
+      "path": "/v1/charges/search",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Search API intentionally skipped (see API_NOTES.md)"
+    },
+    {
+      "id": "refunds.create",
+      "resource": "Refunds",
+      "method": "POST",
+      "path": "/v1/refunds",
+      "implemented": true,
+      "fixture": "refund.json",
+      "tests": [
+        "tests/test_api.py::TestRefunds::test_create_by_charge_full",
+        "tests/test_api.py::TestRefunds::test_partial_refund",
+        "tests/test_conformance.py::TestRefundConformance::test_refund_shape_strict"
+      ]
+    },
+    {
+      "id": "refunds.retrieve",
+      "resource": "Refunds",
+      "method": "GET",
+      "path": "/v1/refunds/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestRefunds::test_retrieve_and_list"
+      ]
+    },
+    {
+      "id": "refunds.update",
+      "resource": "Refunds",
+      "method": "POST",
+      "path": "/v1/refunds/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestRefunds::test_update_metadata"
+      ]
+    },
+    {
+      "id": "refunds.cancel",
+      "resource": "Refunds",
+      "method": "POST",
+      "path": "/v1/refunds/{id}/cancel",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestRefunds::test_cancel_succeeded_refund_400"
+      ]
+    },
+    {
+      "id": "refunds.list",
+      "resource": "Refunds",
+      "method": "GET",
+      "path": "/v1/refunds",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestRefunds::test_retrieve_and_list"
+      ]
+    },
+    {
+      "id": "products.create",
+      "resource": "Products",
+      "method": "POST",
+      "path": "/v1/products",
+      "implemented": true,
+      "fixture": "product.json",
+      "tests": [
+        "tests/test_api.py::TestProducts::test_create",
+        "tests/test_conformance.py::TestProductPriceConformance::test_product_shape_strict"
+      ]
+    },
+    {
+      "id": "products.retrieve",
+      "resource": "Products",
+      "method": "GET",
+      "path": "/v1/products/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestProducts::test_retrieve_update"
+      ]
+    },
+    {
+      "id": "products.update",
+      "resource": "Products",
+      "method": "POST",
+      "path": "/v1/products/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestProducts::test_retrieve_update"
+      ]
+    },
+    {
+      "id": "products.delete",
+      "resource": "Products",
+      "method": "DELETE",
+      "path": "/v1/products/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestProducts::test_delete_without_prices",
+        "tests/test_api.py::TestProducts::test_delete_with_prices_400"
+      ]
+    },
+    {
+      "id": "products.list",
+      "resource": "Products",
+      "method": "GET",
+      "path": "/v1/products",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestProducts::test_list_active_filter"
+      ]
+    },
+    {
+      "id": "products.search",
+      "resource": "Products",
+      "method": "GET",
+      "path": "/v1/products/search",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Search API intentionally skipped (see API_NOTES.md)"
+    },
+    {
+      "id": "prices.create",
+      "resource": "Prices",
+      "method": "POST",
+      "path": "/v1/prices",
+      "implemented": true,
+      "fixture": "price.json",
+      "tests": [
+        "tests/test_api.py::TestPrices::test_create_one_time",
+        "tests/test_api.py::TestPrices::test_create_recurring_stored_verbatim",
+        "tests/test_conformance.py::TestProductPriceConformance::test_price_shape_strict"
+      ]
+    },
+    {
+      "id": "prices.retrieve",
+      "resource": "Prices",
+      "method": "GET",
+      "path": "/v1/prices/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPrices::test_update_nickname_and_metadata"
+      ]
+    },
+    {
+      "id": "prices.update",
+      "resource": "Prices",
+      "method": "POST",
+      "path": "/v1/prices/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPrices::test_update_nickname_and_metadata",
+        "tests/test_api.py::TestPrices::test_unit_amount_immutable"
+      ]
+    },
+    {
+      "id": "prices.list",
+      "resource": "Prices",
+      "method": "GET",
+      "path": "/v1/prices",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestPrices::test_list_filter_product_and_type"
+      ]
+    },
+    {
+      "id": "prices.search",
+      "resource": "Prices",
+      "method": "GET",
+      "path": "/v1/prices/search",
+      "implemented": false,
+      "fixture": null,
+      "tests": [],
+      "skip_reason": "Search API intentionally skipped (see API_NOTES.md)"
+    },
+    {
+      "id": "balance.retrieve",
+      "resource": "Balance",
+      "method": "GET",
+      "path": "/v1/balance",
+      "implemented": true,
+      "fixture": "balance.json",
+      "tests": [
+        "tests/test_api.py::TestBalance::test_seeded_balance",
+        "tests/test_conformance.py::TestBalanceConformance::test_balance_shape_strict"
+      ]
+    },
+    {
+      "id": "balance_transactions.list",
+      "resource": "BalanceTransactions",
+      "method": "GET",
+      "path": "/v1/balance_transactions",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestBalance::test_list_filter_type"
+      ]
+    },
+    {
+      "id": "balance_transactions.retrieve",
+      "resource": "BalanceTransactions",
+      "method": "GET",
+      "path": "/v1/balance_transactions/{id}",
+      "implemented": true,
+      "fixture": "balance_transaction.json",
+      "tests": [
+        "tests/test_api.py::TestBalance::test_charge_balance_transaction_fields",
+        "tests/test_conformance.py::TestBalanceConformance::test_balance_transaction_shape_strict"
+      ]
+    },
+    {
+      "id": "events.list",
+      "resource": "Events",
+      "method": "GET",
+      "path": "/v1/events",
+      "implemented": true,
+      "fixture": "event.json",
+      "tests": [
+        "tests/test_api.py::TestEvents::test_event_shape",
+        "tests/test_api.py::TestEvents::test_type_glob_filter",
+        "tests/test_conformance.py::TestEventConformance::test_event_shape"
+      ]
+    },
+    {
+      "id": "events.retrieve",
+      "resource": "Events",
+      "method": "GET",
+      "path": "/v1/events/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestEvents::test_get_event_by_id"
+      ]
+    },
+    {
+      "id": "account.retrieve",
+      "resource": "Account",
+      "method": "GET",
+      "path": "/v1/account",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestAccount::test_account_shape",
+        "tests/test_api.py::TestSandboxRepoFlow::test_sandbox_repo_flow"
+      ]
+    },
+    {
+      "id": "webhook_endpoints.create",
+      "resource": "WebhookEndpoints",
+      "method": "POST",
+      "path": "/v1/webhook_endpoints",
+      "implemented": true,
+      "fixture": "webhook_endpoint.json",
+      "tests": [
+        "tests/test_webhooks.py::TestWebhookEndpointCrud::test_create_returns_secret_once",
+        "tests/test_conformance.py::TestWebhookEndpointConformance::test_webhook_endpoint_create_shape_strict"
+      ]
+    },
+    {
+      "id": "webhook_endpoints.retrieve",
+      "resource": "WebhookEndpoints",
+      "method": "GET",
+      "path": "/v1/webhook_endpoints/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_webhooks.py::TestWebhookEndpointCrud::test_create_returns_secret_once"
+      ]
+    },
+    {
+      "id": "webhook_endpoints.update",
+      "resource": "WebhookEndpoints",
+      "method": "POST",
+      "path": "/v1/webhook_endpoints/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_webhooks.py::TestWebhookEndpointCrud::test_update_events_url_and_disabled"
+      ]
+    },
+    {
+      "id": "webhook_endpoints.delete",
+      "resource": "WebhookEndpoints",
+      "method": "DELETE",
+      "path": "/v1/webhook_endpoints/{id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_webhooks.py::TestWebhookEndpointCrud::test_delete"
+      ]
+    },
+    {
+      "id": "webhook_endpoints.list",
+      "resource": "WebhookEndpoints",
+      "method": "GET",
+      "path": "/v1/webhook_endpoints",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_webhooks.py::TestWebhookEndpointCrud::test_create_returns_secret_once"
+      ]
+    },
+    {
+      "id": "payment_intents.complete_authentication_mock_only",
+      "resource": "PaymentIntents",
+      "method": "POST",
+      "path": "/v1/payment_intents/{id}/_complete_authentication",
+      "implemented": true,
+      "fixture": null,
+      "mock_only": true,
+      "note": "MOCK-ONLY endpoint standing in for Stripe.js 3DS completion (see API_NOTES.md)",
+      "tests": [
+        "tests/test_3ds.py::TestCompleteAuthentication::test_succeed_charges_and_succeeds",
+        "tests/test_3ds.py::TestCompleteAuthentication::test_fail_records_authentication_required"
+      ]
+    }
+  ],
+  "error_fixtures": [
+    {
+      "fixture": "error_card_declined.json",
+      "tests": [
+        "tests/test_conformance.py::TestErrorConformance::test_card_declined_shape"
+      ]
+    },
+    {
+      "fixture": "error_resource_missing.json",
+      "tests": [
+        "tests/test_conformance.py::TestErrorConformance::test_resource_missing_shape_strict"
+      ]
+    },
+    {
+      "fixture": "error_invalid_api_key.json",
+      "tests": [
+        "tests/test_conformance.py::TestErrorConformance::test_invalid_api_key_shape"
+      ]
+    }
+  ]
+}

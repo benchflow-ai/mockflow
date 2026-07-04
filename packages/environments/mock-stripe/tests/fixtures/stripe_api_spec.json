@@ -1,0 +1,341 @@
+{
+  "service": "stripe",
+  "api_base": "https://api.stripe.com",
+  "api_version": "2026-05-27.dahlia",
+  "docs": "https://docs.stripe.com/api",
+  "resources": {
+    "Customers": {
+      "endpoints": [
+        {
+          "id": "customers.create",
+          "method": "POST",
+          "path": "/v1/customers"
+        },
+        {
+          "id": "customers.retrieve",
+          "method": "GET",
+          "path": "/v1/customers/{id}"
+        },
+        {
+          "id": "customers.update",
+          "method": "POST",
+          "path": "/v1/customers/{id}"
+        },
+        {
+          "id": "customers.delete",
+          "method": "DELETE",
+          "path": "/v1/customers/{id}"
+        },
+        {
+          "id": "customers.list",
+          "method": "GET",
+          "path": "/v1/customers"
+        },
+        {
+          "id": "customers.search",
+          "method": "GET",
+          "path": "/v1/customers/search"
+        },
+        {
+          "id": "customers.list_payment_methods",
+          "method": "GET",
+          "path": "/v1/customers/{id}/payment_methods"
+        }
+      ]
+    },
+    "PaymentIntents": {
+      "endpoints": [
+        {
+          "id": "payment_intents.create",
+          "method": "POST",
+          "path": "/v1/payment_intents"
+        },
+        {
+          "id": "payment_intents.retrieve",
+          "method": "GET",
+          "path": "/v1/payment_intents/{id}"
+        },
+        {
+          "id": "payment_intents.update",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}"
+        },
+        {
+          "id": "payment_intents.confirm",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/confirm"
+        },
+        {
+          "id": "payment_intents.capture",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/capture"
+        },
+        {
+          "id": "payment_intents.cancel",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/cancel"
+        },
+        {
+          "id": "payment_intents.list",
+          "method": "GET",
+          "path": "/v1/payment_intents"
+        },
+        {
+          "id": "payment_intents.search",
+          "method": "GET",
+          "path": "/v1/payment_intents/search"
+        },
+        {
+          "id": "payment_intents.increment_authorization",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/increment_authorization"
+        },
+        {
+          "id": "payment_intents.apply_customer_balance",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/apply_customer_balance"
+        },
+        {
+          "id": "payment_intents.verify_microdeposits",
+          "method": "POST",
+          "path": "/v1/payment_intents/{id}/verify_microdeposits"
+        }
+      ]
+    },
+    "PaymentMethods": {
+      "endpoints": [
+        {
+          "id": "payment_methods.create",
+          "method": "POST",
+          "path": "/v1/payment_methods"
+        },
+        {
+          "id": "payment_methods.retrieve",
+          "method": "GET",
+          "path": "/v1/payment_methods/{id}"
+        },
+        {
+          "id": "payment_methods.update",
+          "method": "POST",
+          "path": "/v1/payment_methods/{id}"
+        },
+        {
+          "id": "payment_methods.attach",
+          "method": "POST",
+          "path": "/v1/payment_methods/{id}/attach"
+        },
+        {
+          "id": "payment_methods.detach",
+          "method": "POST",
+          "path": "/v1/payment_methods/{id}/detach"
+        },
+        {
+          "id": "payment_methods.list",
+          "method": "GET",
+          "path": "/v1/payment_methods"
+        }
+      ]
+    },
+    "Charges": {
+      "endpoints": [
+        {
+          "id": "charges.create",
+          "method": "POST",
+          "path": "/v1/charges"
+        },
+        {
+          "id": "charges.retrieve",
+          "method": "GET",
+          "path": "/v1/charges/{id}"
+        },
+        {
+          "id": "charges.update",
+          "method": "POST",
+          "path": "/v1/charges/{id}"
+        },
+        {
+          "id": "charges.capture",
+          "method": "POST",
+          "path": "/v1/charges/{id}/capture"
+        },
+        {
+          "id": "charges.list",
+          "method": "GET",
+          "path": "/v1/charges"
+        },
+        {
+          "id": "charges.search",
+          "method": "GET",
+          "path": "/v1/charges/search"
+        }
+      ]
+    },
+    "Refunds": {
+      "endpoints": [
+        {
+          "id": "refunds.create",
+          "method": "POST",
+          "path": "/v1/refunds"
+        },
+        {
+          "id": "refunds.retrieve",
+          "method": "GET",
+          "path": "/v1/refunds/{id}"
+        },
+        {
+          "id": "refunds.update",
+          "method": "POST",
+          "path": "/v1/refunds/{id}"
+        },
+        {
+          "id": "refunds.cancel",
+          "method": "POST",
+          "path": "/v1/refunds/{id}/cancel"
+        },
+        {
+          "id": "refunds.list",
+          "method": "GET",
+          "path": "/v1/refunds"
+        }
+      ]
+    },
+    "Products": {
+      "endpoints": [
+        {
+          "id": "products.create",
+          "method": "POST",
+          "path": "/v1/products"
+        },
+        {
+          "id": "products.retrieve",
+          "method": "GET",
+          "path": "/v1/products/{id}"
+        },
+        {
+          "id": "products.update",
+          "method": "POST",
+          "path": "/v1/products/{id}"
+        },
+        {
+          "id": "products.delete",
+          "method": "DELETE",
+          "path": "/v1/products/{id}"
+        },
+        {
+          "id": "products.list",
+          "method": "GET",
+          "path": "/v1/products"
+        },
+        {
+          "id": "products.search",
+          "method": "GET",
+          "path": "/v1/products/search"
+        }
+      ]
+    },
+    "Prices": {
+      "endpoints": [
+        {
+          "id": "prices.create",
+          "method": "POST",
+          "path": "/v1/prices"
+        },
+        {
+          "id": "prices.retrieve",
+          "method": "GET",
+          "path": "/v1/prices/{id}"
+        },
+        {
+          "id": "prices.update",
+          "method": "POST",
+          "path": "/v1/prices/{id}"
+        },
+        {
+          "id": "prices.list",
+          "method": "GET",
+          "path": "/v1/prices"
+        },
+        {
+          "id": "prices.search",
+          "method": "GET",
+          "path": "/v1/prices/search"
+        }
+      ]
+    },
+    "Balance": {
+      "endpoints": [
+        {
+          "id": "balance.retrieve",
+          "method": "GET",
+          "path": "/v1/balance"
+        }
+      ]
+    },
+    "BalanceTransactions": {
+      "endpoints": [
+        {
+          "id": "balance_transactions.list",
+          "method": "GET",
+          "path": "/v1/balance_transactions"
+        },
+        {
+          "id": "balance_transactions.retrieve",
+          "method": "GET",
+          "path": "/v1/balance_transactions/{id}"
+        }
+      ]
+    },
+    "Events": {
+      "endpoints": [
+        {
+          "id": "events.list",
+          "method": "GET",
+          "path": "/v1/events"
+        },
+        {
+          "id": "events.retrieve",
+          "method": "GET",
+          "path": "/v1/events/{id}"
+        }
+      ]
+    },
+    "Account": {
+      "endpoints": [
+        {
+          "id": "account.retrieve",
+          "method": "GET",
+          "path": "/v1/account"
+        }
+      ]
+    },
+    "WebhookEndpoints": {
+      "endpoints": [
+        {
+          "id": "webhook_endpoints.create",
+          "method": "POST",
+          "path": "/v1/webhook_endpoints"
+        },
+        {
+          "id": "webhook_endpoints.retrieve",
+          "method": "GET",
+          "path": "/v1/webhook_endpoints/{id}"
+        },
+        {
+          "id": "webhook_endpoints.update",
+          "method": "POST",
+          "path": "/v1/webhook_endpoints/{id}"
+        },
+        {
+          "id": "webhook_endpoints.delete",
+          "method": "DELETE",
+          "path": "/v1/webhook_endpoints/{id}"
+        },
+        {
+          "id": "webhook_endpoints.list",
+          "method": "GET",
+          "path": "/v1/webhook_endpoints"
+        }
+      ]
+    }
+  }
+}
