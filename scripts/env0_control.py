@@ -59,6 +59,14 @@ class Service:
         return ROOT / "packages" / "environments" / self.id
 
 
+@dataclass(frozen=True)
+class TaskMetadata:
+    name: str
+    services: list[str]
+    tags: list[str]
+    instruction: str
+
+
 def load_services() -> dict[str, Service]:
     data = tomllib.loads(CONFIG_PATH.read_text())
     if data.get("runtime", {}).get("version") != 1:
@@ -78,16 +86,113 @@ def load_services() -> dict[str, Service]:
     return dict(sorted(services.items()))
 
 
-def load_task_services(task_name: str) -> list[str]:
+def _parse_yaml_scalar(value: str) -> str:
+    value = value.strip()
+    if (value.startswith("'") and value.endswith("'")) or (
+        value.startswith('"') and value.endswith('"')
+    ):
+        return value[1:-1].replace("''", "'")
+    return value
+
+
+def _parse_inline_string_list(value: str) -> list[str] | None:
+    value = value.strip()
+    if value == "[]":
+        return []
+    if not (value.startswith("[") and value.endswith("]")):
+        return None
+    body = value[1:-1].strip()
+    if not body:
+        return []
+    return [_parse_yaml_scalar(item.strip()) for item in body.split(",")]
+
+
+def _frontmatter_list(frontmatter: list[str], path: tuple[str, ...]) -> list[str] | None:
+    stack: list[tuple[int, str]] = []
+    collecting = False
+    list_indent = -1
+    values: list[str] = []
+
+    for raw_line in frontmatter:
+        line = raw_line.split("#", 1)[0].rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        stripped = line.strip()
+
+        while stack and indent <= stack[-1][0]:
+            stack.pop()
+
+        if collecting:
+            if indent >= list_indent and stripped.startswith("- "):
+                values.append(_parse_yaml_scalar(stripped[2:]))
+                continue
+            if indent <= list_indent:
+                return values
+
+        if ":" not in stripped:
+            continue
+        key, raw_value = stripped.split(":", 1)
+        key = key.strip()
+        value = raw_value.strip()
+        current_path = tuple([item for _, item in stack] + [key])
+
+        if current_path == path:
+            inline = _parse_inline_string_list(value)
+            if inline is not None:
+                return inline
+            if value:
+                raise SystemExit(f"Invalid list value for {'.'.join(path)} in task.md")
+            collecting = True
+            list_indent = indent
+            values = []
+
+        if not value:
+            stack.append((indent, key))
+
+    return values if collecting else None
+
+
+def _split_task_document(task_md: Path) -> tuple[list[str], str]:
+    if not task_md.exists():
+        raise SystemExit(f"Task not found: {task_md}")
+    lines = task_md.read_text().splitlines()
+    if not lines or lines[0].strip() != "---":
+        raise SystemExit(f"Task document must start with YAML frontmatter: {task_md}")
+    try:
+        end = next(i for i, line in enumerate(lines[1:], start=1) if line.strip() == "---")
+    except StopIteration as exc:
+        raise SystemExit(f"Task document frontmatter is not closed: {task_md}") from exc
+    return lines[1:end], "\n".join(lines[end + 1 :]).strip()
+
+
+def _instruction_from_body(body: str) -> str:
+    lines = body.strip().splitlines()
+    if lines and lines[0].strip().lower() == "## prompt":
+        return "\n".join(lines[1:]).strip()
+    return body.strip()
+
+
+def load_task_metadata(task_name: str) -> TaskMetadata:
     task_path = EXAMPLE_TASKS / task_name
-    task_toml = task_path / "task.toml"
-    if not task_toml.exists():
-        raise SystemExit(f"Task not found: {task_name} ({task_toml})")
-    data = tomllib.loads(task_toml.read_text())
-    services = data.get("environment", {}).get("services", [])
-    if not isinstance(services, list) or not all(isinstance(s, str) for s in services):
-        raise SystemExit(f"Invalid [environment].services in {task_toml}")
-    return services
+    task_md = task_path / "task.md"
+    frontmatter, body = _split_task_document(task_md)
+
+    services = _frontmatter_list(frontmatter, ("benchflow", "env0", "services"))
+    if services is None or not all(isinstance(service, str) for service in services):
+        raise SystemExit(f"Invalid benchflow.env0.services in {task_md}")
+
+    tags = _frontmatter_list(frontmatter, ("metadata", "tags")) or []
+    return TaskMetadata(
+        name=task_name,
+        services=services,
+        tags=tags,
+        instruction=_instruction_from_body(body),
+    )
+
+
+def load_task_services(task_name: str) -> list[str]:
+    return load_task_metadata(task_name).services
 
 
 def task_data_dir(task_name: str) -> Path:

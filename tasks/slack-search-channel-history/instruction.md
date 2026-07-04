@@ -1,2 +1,0 @@
-Find the agreed-upon enterprise tier API rate limit from the product team's recent discussion in #product-archive and post the answer in #general.
-Use this format: > The Enterprise API rate limit is **X requests/minute** (source: #product-archive)

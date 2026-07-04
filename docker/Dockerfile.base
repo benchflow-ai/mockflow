@@ -87,7 +87,7 @@ RUN mkdir -p /data
 WORKDIR /app
 
 # Lock sensitive directories (root-only)
-# /var/lib/task — hidden task payload (data/ + solution/)
+# /var/lib/task — hidden task payload (data/ + oracle/)
 # /data         — agent must use HTTP API, not read .db files directly
 # /data/oracle  — privileged oracle manifest + artifacts
 # /etc/env0 — internal service metadata

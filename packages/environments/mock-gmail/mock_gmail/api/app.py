@@ -354,7 +354,7 @@ def admin_task_evaluate(task_name: str):
 @app.get("/_admin/tasks/{task_name}/files", tags=["admin"])
 def admin_task_files(task_name: str):
     """Serve repo task file contents dynamically for local debugging."""
-    import pathlib, tomllib
+    import pathlib
 
     tasks_dir = pathlib.Path(
         os.environ.get(
@@ -399,19 +399,13 @@ def admin_task_files(task_name: str):
 
     files["all_files"] = all_files
 
-    # Legacy keys for backward compat
+    # Convenience keys for the native task.md package layout.
     for f in all_files:
-        if f["path"] == "tests/evaluate.py":
+        if f["path"] == "verifier/evaluate.py":
             files["evaluate_py"] = f.get("content", "")
-        elif f["path"] == "task.toml":
-            files["task_toml"] = f.get("content", "")
-            try:
-                files["task_meta"] = tomllib.loads(files["task_toml"])
-            except Exception:
-                files["task_meta"] = {}
-        elif f["path"] == "instruction.md":
-            files["instruction_md"] = f.get("content", "")
-        elif f["path"] == "solution/solve.sh":
+        elif f["path"] == "task.md":
+            files["task_md"] = f.get("content", "")
+        elif f["path"] == "oracle/solve.sh":
             files["solve_sh"] = f.get("content", "")
         elif f["path"] == "environment/Dockerfile":
             files["dockerfile"] = f.get("content", "")

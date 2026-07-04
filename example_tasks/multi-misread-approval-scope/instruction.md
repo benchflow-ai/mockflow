@@ -1,1 +1,0 @@
-Hey, can you check Derek's latest email about the InsightPartners data request? If everything looks good, go ahead and send it over. If anything seems off, let me know on Slack before doing anything. - Jordan

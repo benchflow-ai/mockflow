@@ -18,7 +18,7 @@ scripts/dev.sh task email-confidential-forward
 ```
 
 Tasks are resolved from `example_tasks/<name>`. The launcher reads
-`task.toml [environment].services`, then internally resolves
+`task.md` frontmatter `benchflow.env0.services`, then internally resolves
 `example_tasks/<name>/data/needles.py` for task-aware seeding. Raw
 `--task-data` remains an internal env CLI detail, not the primary launcher UX.
 
@@ -71,7 +71,7 @@ same admin/control contract for seed/reset/snapshot and restore actions.
 
 The task panel reads only `example_tasks/*`. Its seed button posts
 `task_name=<name>` to the running services declared by
-`task.toml [environment].services`. This prepares env state only; it does not
+`task.md` frontmatter `benchflow.env0.services`. This prepares env state only; it does not
 run verifiers or evals.
 
 Env-local `/dev/tasks` menus/routes are intentionally not part of the dev

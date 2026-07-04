@@ -7,7 +7,6 @@ import argparse
 import html
 import json
 import sys
-import tomllib
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -73,32 +72,23 @@ def list_tasks() -> list[dict]:
     for task_dir in sorted(control.EXAMPLE_TASKS.iterdir()):
         if not task_dir.is_dir():
             continue
-        task_toml = task_dir / "task.toml"
-        if not task_toml.exists():
+        task_md = task_dir / "task.md"
+        if not task_md.exists():
             continue
-        data = tomllib.loads(task_toml.read_text())
-        services = data.get("environment", {}).get("services", [])
-        if not isinstance(services, list):
-            services = []
-        tags = data.get("metadata", {}).get("tags", [])
-        if not isinstance(tags, list):
-            tags = []
-        instruction = read_instruction_preview(task_dir / "instruction.md")
+        metadata = control.load_task_metadata(task_dir.name)
         tasks.append({
             "name": task_dir.name,
-            "services": [s for s in services if isinstance(s, str)],
-            "tags": [t for t in tags if isinstance(t, str)],
-            "instruction": instruction,
+            "services": metadata.services,
+            "tags": metadata.tags,
+            "instruction": read_instruction_preview(metadata.instruction),
             "has_needles": (task_dir / "data" / "needles.py").exists(),
             "command": f"scripts/dev.sh task {task_dir.name}",
         })
     return tasks
 
 
-def read_instruction_preview(path: Path, limit: int = 220) -> str:
-    if not path.exists():
-        return ""
-    text = " ".join(path.read_text().split())
+def read_instruction_preview(instruction: str, limit: int = 220) -> str:
+    text = " ".join(instruction.split())
     if len(text) <= limit:
         return text
     return text[: limit - 1].rstrip() + "..."

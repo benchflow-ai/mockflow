@@ -1,7 +1,7 @@
 """Demo tasks — self-contained evaluation tasks for local debugging.
 
 These are independent of repo-level task packages. Evaluator logic is inlined here
-so there are no cross-references to tasks/email-*/tests/evaluate.py.
+so there are no cross-references to tasks/email-*/verifier/evaluate.py.
 Divergence from downstream benchmark scoring is expected and fine.
 """
 

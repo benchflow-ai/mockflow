@@ -1,1 +1,0 @@
-There's been a bunch of backend discussion in Slack lately and I have a feeling our rate limiting spec in Drive is out of date. Can you check #backend and see if anything was decided that doesn't match what's in the doc? Just leave comments where things are off. Don't change the doc.

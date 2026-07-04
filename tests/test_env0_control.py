@@ -67,6 +67,24 @@ class Env0ControlTests(unittest.TestCase):
             ["mock-gdrive", "mock-gdoc"],
         )
 
+    def test_task_packages_use_native_task_md_layout(self):
+        missing: list[str] = []
+        legacy: list[str] = []
+
+        for root in (ROOT / "example_tasks", ROOT / "tasks"):
+            for task_dir in sorted(path for path in root.iterdir() if path.is_dir()):
+                if task_dir.name.startswith("_"):
+                    continue
+                for required in ("task.md", "oracle", "verifier"):
+                    if not (task_dir / required).exists():
+                        missing.append(f"{task_dir.relative_to(ROOT)}/{required}")
+                for forbidden in ("task.toml", "instruction.md", "solution", "tests"):
+                    if (task_dir / forbidden).exists():
+                        legacy.append(f"{task_dir.relative_to(ROOT)}/{forbidden}")
+
+        self.assertEqual(missing, [])
+        self.assertEqual(legacy, [])
+
     def test_task_data_dir_resolves_example_task_needles(self):
         path = control.task_data_dir("email-confidential-forward")
 

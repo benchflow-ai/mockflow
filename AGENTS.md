@@ -16,7 +16,8 @@ contracts, API parity, and the shared Docker base image.
 ## Core Contracts
 
 - Read service metadata from `config.toml`.
-- Use `task.toml [environment] services = [...]` for task service selection.
+- Use `task.md` frontmatter `benchflow.env0.services: [...]` for task service
+  selection.
 - Do not infer services from Dockerfile text.
 - Keep public launcher UX task-name based: `scripts/dev.sh task <name>`.
 - Keep raw `--task-data` / task-data-path plumbing internal to env CLIs,
