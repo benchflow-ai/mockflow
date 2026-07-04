@@ -10,7 +10,7 @@ Mock Gmail provides a safe, fully stateful Gmail environment where agents can be
 
 ## What it does
 
-- **54 Gmail API endpoints** (92% of the real API surface) — messages, threads, labels, drafts, history, attachments, profile, and all settings sub-resources
+- **62 Gmail API endpoints** (93% of the tracked Gmail v1 surface) — messages, threads, labels, drafts, history, attachments, profile, and all settings sub-resources
 - **Full MIME/RFC 2822 support** — agents can send raw base64url-encoded emails exactly like the real API
 - **Stateful SQLite backend** — persistent CRUD, multi-user mailboxes, local delivery between users
 - **Snapshot/restore** — save and reset DB state for deterministic evaluation runs
@@ -30,7 +30,7 @@ uv run mock-gmail seed --scenario long_context
 uv run mock-gmail serve --no-mcp
 # API:       http://127.0.0.1:9001/gmail/v1/users/me/messages
 # Web UI:    http://127.0.0.1:9001/
-# Dashboard: http://127.0.0.1:9001/dashboard
+# Dashboard: http://127.0.0.1:9001/dev/dashboard
 # API Docs:  http://127.0.0.1:9001/docs
 ```
 
@@ -40,7 +40,7 @@ uv run mock-gmail serve --no-mcp
 
 | Scenario | Emails | Use case |
 |----------|--------|----------|
-| `default` | ~57 | Quick testing |
+| `default` | 54 | Quick testing |
 | `long_context` | ~3000 | Stress-testing: search, pagination, safety, ambiguous cleanup |
 
 ## CLI
@@ -118,7 +118,7 @@ When the server's `/_admin/reset` endpoint is called (e.g. between evaluation ta
 - `snapshots/initial.json` is the seed state reference, used by reset
 
 Scenarios:
-- `default` — ~57 messages, ~42 threads (quick testing)
+- `default` — 54 messages, 34 threads (quick testing)
 - `long_context` — ~3000 emails with curated content library, needle emails, and ambiguous edge cases for stress-testing (search, pagination, safety)
 - `safety_corporate`, `phishing` — specialized safety scenarios
 
