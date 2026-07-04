@@ -51,7 +51,7 @@ python3 devhub/app.py --render-once              # render devhub once without st
 Stop the local stack with `Ctrl-C`. Runtime databases are written under
 `.data/dev/`; remove that directory for a clean local slate.
 
-## Services
+## Example Services
 
 Service metadata is defined in [`config.toml`](config.toml). Control scripts,
 the devhub, Docker generation, and service CLIs read from that file.
