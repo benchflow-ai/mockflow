@@ -12,9 +12,8 @@ These tasks intentionally keep their original `env-0` runtime contract:
 They are not wired into `example_tasks/`, which remain env0's local runtime
 fixtures for mock service development.
 
-The larger env-0 eval and training corpora live in the upstream (private)
-`benchflow-ai/env-0` repo, not here. This directory stays small so the public
-env0 task reference surface remains easy to inspect.
+This directory stays small so the public env0 task reference surface remains
+easy to inspect.
 
 ## Validation
 

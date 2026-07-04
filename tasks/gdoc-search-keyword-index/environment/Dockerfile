@@ -1,6 +1,6 @@
 FROM ghcr.io/benchflow-ai/env-0-base:latest
 
-# Task seed data (tests/ + solution/ uploaded by benchflow at runtime)
+# Task seed data (verifier/ + oracle/ uploaded by benchflow at runtime)
 COPY tasks/gdoc-search-keyword-index/data /tasks/gdoc-search-keyword-index/data
 ENV TASKS_DIR=/tasks
 

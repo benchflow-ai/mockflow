@@ -5,7 +5,7 @@ ENV TASK_ROOT=/var/lib/task
 ENV NEEDLE_MANIFEST=/data/oracle/manifest.json
 
 COPY example_tasks/multi-mail-cal-sync/data /var/lib/task/data
-COPY example_tasks/multi-mail-cal-sync/solution /var/lib/task/solution
+COPY example_tasks/multi-mail-cal-sync/oracle /var/lib/task/oracle
 
 RUN chmod 700 /var/lib/task && \
     mkdir -p /data/oracle && \

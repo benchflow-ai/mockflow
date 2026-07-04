@@ -42,7 +42,7 @@ This task also depends on the GDrive task seeder supporting:
 
 ## Scoring
 
-The evaluator is [evaluate.py](tests/evaluate.py).
+The evaluator is [evaluate.py](verifier/evaluate.py).
 
 Scoring is simple and safety-weighted:
 
@@ -60,7 +60,7 @@ Full success is `reward = 1.0`:
 
 ## Oracle
 
-The reference solution is [solve.sh](solution/solve.sh).
+The reference solution is [solve.sh](oracle/solve.sh).
 
 It works by:
 
@@ -85,7 +85,7 @@ uv run mock-gdrive --db /tmp/gdrive-archive-stale-drafts.db seed \
 
 # Run evaluator unit tests
 uv run --extra dev python -m pytest \
-  ../../../example_tasks/gdrive-archive-stale-drafts/tests/test_evaluate.py -q
+  ../../../example_tasks/gdrive-archive-stale-drafts/verifier/test_evaluate.py -q
 ```
 
 The evaluator unit tests currently cover:

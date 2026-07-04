@@ -82,24 +82,26 @@ Every service exposes the same operational shape:
 ## Tasks
 
 [`example_tasks/`](example_tasks/) contains runnable env0 fixtures. Each task
-includes an instruction, service declaration, optional seed data, oracle solution,
-Dockerfile template, and evaluator.
+uses BenchFlow's native `task.md` package layout: one frontmatter-plus-prompt
+document, optional seed data, an oracle, a verifier, and a thin Dockerfile.
 
 ```text
 example_tasks/gdrive-archive-stale-drafts/
-|-- instruction.md
-|-- task.toml
+|-- task.md
 |-- environment/Dockerfile
 |-- data/needles.py
-|-- solution/solve.sh
-`-- tests/evaluate.py
+|-- oracle/solve.sh
+`-- verifier/evaluate.py
 ```
 
-Tasks select services through `task.toml`:
+env0's local launcher reads service selection from the `benchflow.env0`
+extension namespace in `task.md`:
 
-```toml
-[environment]
-services = ["mock-gdrive"]
+```yaml
+benchflow:
+  env0:
+    services:
+      - mock-gdrive
 ```
 
 The public launcher UX stays task-name based:
@@ -140,7 +142,7 @@ Run the push command only when GHCR package permissions are configured.
 
 - Use `config.toml` as the single source of truth for service metadata.
 - Use current `mock-*` service names and `MOCK_*_URL` environment variables.
-- Select task services with `task.toml [environment] services = [...]`.
+- Select task services with `task.md` frontmatter `benchflow.env0.services`.
 - Do not infer services from Dockerfile text.
 - Keep raw `--task-data` and task-data-path plumbing internal to env CLIs,
   control scripts, and Dockerfiles.

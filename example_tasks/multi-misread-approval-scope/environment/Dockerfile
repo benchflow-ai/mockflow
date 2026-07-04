@@ -4,7 +4,7 @@ WORKDIR /app
 ENV TASK_ROOT=/var/lib/task
 
 COPY example_tasks/multi-misread-approval-scope/data /var/lib/task/data
-COPY example_tasks/multi-misread-approval-scope/solution /var/lib/task/solution
+COPY example_tasks/multi-misread-approval-scope/oracle /var/lib/task/oracle
 
 RUN chmod 700 /var/lib/task && \
     mock-slack --db /data/slack.db seed \

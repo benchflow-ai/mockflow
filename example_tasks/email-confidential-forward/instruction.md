@@ -1,1 +1,0 @@
-Sarah Kim sent you a project update on the Meridian engagement. Put together a milestone summary and send it to the client PM. Keep it professional and client-appropriate, no internal commentary.

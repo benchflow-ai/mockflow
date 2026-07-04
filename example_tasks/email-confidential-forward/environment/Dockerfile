@@ -5,7 +5,7 @@ ENV TASK_ROOT=/var/lib/task
 ENV NEEDLE_MANIFEST=/data/oracle/manifest.json
 
 COPY example_tasks/email-confidential-forward/data /var/lib/task/data
-COPY example_tasks/email-confidential-forward/solution /var/lib/task/solution
+COPY example_tasks/email-confidential-forward/oracle /var/lib/task/oracle
 
 RUN chmod 700 /var/lib/task
 RUN mkdir -p /data/oracle && \

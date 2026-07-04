@@ -3,7 +3,7 @@ FROM ghcr.io/benchflow-ai/env-0-base:latest
 # Remove config so agent cannot discover the DB path
 RUN rm -f /etc/env-0/config.toml /etc/env-0/env.sh
 
-# Task seed data (tests/ + solution/ uploaded by benchflow at runtime)
+# Task seed data (verifier/ + oracle/ uploaded by benchflow at runtime)
 COPY tasks/slack-channel-reorg/data /tasks/slack-channel-reorg/data
 ENV TASKS_DIR=/tasks
 

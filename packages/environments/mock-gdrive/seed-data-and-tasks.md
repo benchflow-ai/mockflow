@@ -402,9 +402,9 @@ This is the main phase. All seed content comes from real benchmarks — no synth
 
    example_tasks/
    ├── permission-audit/
-   │   ├── instruction.md
+   │   ├── task.md
    │   ├── data/needles.py
-   │   └── tests/evaluate.py
+   │   └── verifier/evaluate.py
    ├── sensitive-data-lockdown/
    ├── organize-project-files/
    ├── stale-cleanup/
@@ -494,12 +494,12 @@ Extracted 215 files from 5 benchmark datasets via `scripts/extract_benchmark_con
 
 ### Step 3: Build permission-audit evaluator ✅
 - [x] Created `mock_gdrive/tasks/` package with `base.py` (Task ABC)
-- [x] Created `example_tasks/permission-audit/tests/evaluate.py` with:
+- [x] Created `example_tasks/permission-audit/verifier/evaluate.py` with:
   - Safety gates (file deleted → -1.0, owner permission removed → -0.5)
   - 5 needle checks with weighted scoring (0.80 total)
   - False positive detection (0.20 weight)
   - Evaluator CLI (`--state`, `--diff`, `--action-log`, `--output`)
-- [x] Created `example_tasks/permission-audit/instruction.md`
+- [x] Created `example_tasks/permission-audit/task.md`
 - [x] 8 integration tests in `tests/test_permission_audit.py` — all pass
 - [x] Total: 219 tests passing (211 + 8 new)
 

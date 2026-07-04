@@ -62,12 +62,11 @@ Add at least one task-shaped fixture before expanding Calendar task coverage.
 Repo-level examples live under `example_tasks/<task-name>/` with:
 
 ```
-task.toml
-instruction.md
+task.md
 data/needles.py
 environment/
   Dockerfile
-tests/
+verifier/
   evaluate.py
 ```
 
