@@ -11,8 +11,10 @@
 
 ![Seeded env0 mock services: Gmail, Slack, Calendar, and Drive](docs/assets/readme/hero-collage.png)
 
-env0 provides five local, stateful mock services for productivity-agent testing:
-Gmail, Calendar, Drive, Docs, and Slack. The services expose REST APIs, web UIs,
+env0 inherits from the mock environments in **[ClawsBench](https://github.com/benchflow-ai/ClawsBench)**,
+a benchmark for evaluating and improving LLM agents in realistic productivity settings.
+env0 provides local, stateful mock services for productivity-agent evalulation and training:
+Gmail, Calendar, Drive, Docs, Slack, and more. The services expose REST APIs, web UIs,
 OpenAPI docs, MCP servers, deterministic seeds, and evaluation control endpoints
 for reset, snapshots, diffs, and action logs.
 
@@ -27,7 +29,6 @@ Prerequisites:
 
 - Python 3.12+
 - [`uv`](https://github.com/astral-sh/uv)
-- Free local ports `9001` through `9005` and `9060`
 - Docker, only for Docker/base-image smoke checks
 
 Start all configured services and the devhub:
@@ -189,7 +190,7 @@ env0/
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
-## Related Public Repos
+## Related Repos
 
 - [benchflow](https://github.com/benchflow-ai/benchflow) - evaluation framework,
   task standard, and agent runners.
