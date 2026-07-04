@@ -2,7 +2,7 @@
 # Fetch state/diff/action_log from the environment and run evaluate.py
 set -euo pipefail
 
-BASE="${DRIVE_URL:-http://localhost:9005}"
+BASE="${GDRIVE_URL:-${DRIVE_URL:-http://localhost:9003}}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 mkdir -p "$LOGS_DIR"
 

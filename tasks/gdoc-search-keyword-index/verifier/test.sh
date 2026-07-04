@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOCS="${DOCS_URL:-http://localhost:9004}"
-DRIVE="${DRIVE_URL:-http://localhost:9005}"
+DRIVE="${GDRIVE_URL:-${DRIVE_URL:-http://localhost:9003}}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 mkdir -p "$LOGS_DIR"
 

@@ -196,6 +196,7 @@ env0/
 - [API validation playbook](docs/api-validation-playbook.md)
 - [Parity audit](docs/parity-audit/README.md)
 - [Validated workflows](docs/validated-workflows.md)
+- [Run public tasks with BenchFlow](docs/guides/run-tasks-with-benchflow.md)
 - [Good first contributions](docs/good-first-contributions.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)

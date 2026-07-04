@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-BASE="${SLACK_URL:-http://localhost:9002}"
+BASE="${SLACK_URL:-http://localhost:9005}"
 BOT="Authorization: Bearer ${SLACK_BOT_TOKEN:-mock-bot-token}"
 USER_TOK="Authorization: Bearer ${SLACK_USER_TOKEN:-mock-user-token}"
 

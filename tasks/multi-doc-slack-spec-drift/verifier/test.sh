@@ -2,8 +2,8 @@
 set -euo pipefail
 
 DOCS="${DOCS_URL:-http://localhost:9004}"
-DRIVE="${DRIVE_URL:-http://localhost:9005}"
-SLACK="${SLACK_URL:-http://localhost:9002}"
+DRIVE="${GDRIVE_URL:-${DRIVE_URL:-http://localhost:9003}}"
+SLACK="${SLACK_URL:-http://localhost:9005}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 DOC_ID="1ApiRateLimitingPolicySpec000000000000000000"
 mkdir -p "$LOGS_DIR"
@@ -12,7 +12,7 @@ curl -s "$DOCS/_admin/state" > /tmp/final_state.json
 curl -s "$DOCS/_admin/diff" > /tmp/docs_diff.json
 
 # Agents may create comments via the Docs API (port 9004) or the
-# Drive comments API (port 9005).  Fetch from both and merge.
+# Drive comments API (port 9003).  Fetch from both and merge.
 curl -s "$DRIVE/drive/v3/files/${DOC_ID}/comments" > /tmp/drive_comments.json 2>/dev/null || echo '{"comments":[]}' > /tmp/drive_comments.json
 
 python3 -c "
