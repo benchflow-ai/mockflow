@@ -6,13 +6,13 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
-# Stub env_0_gdrive so needles.py can be imported without the real package
-if "env_0_gdrive" not in sys.modules:
+# Stub mock_gdrive so needles.py can be imported without the real package
+if "mock_gdrive" not in sys.modules:
     _stub = MagicMock()
     _stub.seed.content.DOC = "application/vnd.google-apps.document"
-    sys.modules["env_0_gdrive"] = _stub
-    sys.modules["env_0_gdrive.seed"] = _stub.seed
-    sys.modules["env_0_gdrive.seed.content"] = _stub.seed.content
+    sys.modules["mock_gdrive"] = _stub
+    sys.modules["mock_gdrive.seed"] = _stub.seed
+    sys.modules["mock_gdrive.seed.content"] = _stub.seed.content
 
 _task_root = Path(__file__).resolve().parent.parent
 os.environ.setdefault("TASKS_DIR", str(_task_root.parent))

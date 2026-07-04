@@ -58,7 +58,10 @@ class MessageLabel(Base):
     __tablename__ = "message_labels"
 
     message_id: Mapped[str] = mapped_column(ForeignKey("messages.id"), primary_key=True)
-    label_id: Mapped[str] = mapped_column(ForeignKey("labels.id"), primary_key=True)
+    # Bare Gmail label id (e.g. "INBOX", "Label_ab12cd34"). Labels now have a
+    # composite primary key (id, user_id), so a single-column FK to labels.id
+    # is no longer expressible; the owning user's label row is identified by
+    # (label_id, message.user_id).
+    label_id: Mapped[str] = mapped_column(String, primary_key=True)
 
     message: Mapped["Message"] = relationship(back_populates="labels")
-    label: Mapped["Label"] = relationship(back_populates="message_labels")  # noqa: F821

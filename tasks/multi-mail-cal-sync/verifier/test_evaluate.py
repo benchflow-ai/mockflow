@@ -27,8 +27,8 @@ _scenarios_spec = importlib.util.spec_from_file_location(
 scenarios = importlib.util.module_from_spec(_scenarios_spec)
 _scenarios_spec.loader.exec_module(scenarios)
 
-from env_0_gcal.seed.task_packs import get_seed_pack  # noqa: E402
-from env_0_gcal.seed.task_seed import _resolve_seed_inputs  # noqa: E402
+from mock_gcal.seed.task_packs import get_seed_pack  # noqa: E402
+from mock_gcal.seed.task_seed import _resolve_seed_inputs  # noqa: E402
 
 DAY_NAMES = scenarios.DAY_NAMES
 SCENARIOS = scenarios.SCENARIOS

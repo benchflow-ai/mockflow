@@ -1,13 +1,24 @@
 """Shared test fixtures."""
 
 import os
+import sys
 import tempfile
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+
+# Make sibling auth-client importable for auth integration tests without a
+# pyproject path dependency, which would break shallow task-image installs.
+_client_pkg = Path(__file__).resolve().parents[3] / "auth-client"
+if _client_pkg.is_dir():
+    try:
+        import env_0_auth_client  # noqa: F401
+    except ImportError:
+        sys.path.insert(0, str(_client_pkg))
 
 from mock_gdrive.models.base import Base
 from mock_gdrive.models import User, File, Permission, Comment, Reply, Revision, Change, Drive

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -346,3 +347,44 @@ def admin_task_evaluate(task_name: str):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# --- auth integration (optional; enabled via AUTH_ENABLED) ---
+from .deps import ImpersonationError  # noqa: E402
+
+
+@app.exception_handler(ImpersonationError)
+async def impersonation_error_handler(request: Request, exc: ImpersonationError):
+    """Contract-pinned 403 impersonation body."""
+    from env_0_auth_client.errors import impersonation_body
+
+    return JSONResponse(
+        status_code=403,
+        content=impersonation_body(exc.authenticated_user, exc.requested_user),
+    )
+
+
+def _auth_enabled() -> bool:
+    return os.environ.get("AUTH_ENABLED", "").strip().lower() in ("1", "true", "yes")
+
+
+def _apply_auth(target_app: FastAPI, **middleware_kwargs) -> bool:
+    """Add GcalEnv_0AuthMiddleware to ``target_app`` when AUTH_ENABLED is truthy."""
+    if not _auth_enabled():
+        return False
+    try:
+        import env_0_auth_client  # noqa: F401
+    except ImportError as exc:
+        raise RuntimeError(
+            "AUTH_ENABLED=1 but auth-client is not installed. "
+            "Install packages/auth-client or unset AUTH_ENABLED."
+        ) from exc
+
+    from mock_gcal.api.auth_middleware import GcalEnv_0AuthMiddleware
+    from mock_gcal.auth_scopes import SCOPE_MAP
+
+    target_app.add_middleware(GcalEnv_0AuthMiddleware, scope_map=SCOPE_MAP, **middleware_kwargs)
+    return True
+
+
+_apply_auth(app)

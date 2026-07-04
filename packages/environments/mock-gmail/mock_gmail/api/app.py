@@ -510,6 +510,12 @@ def _apply_auth(target_app: FastAPI, **middleware_kwargs) -> bool:
 
     from mock_gmail.api.auth_middleware import GmailMockAuthMiddleware
     from mock_gmail.auth_scopes import SCOPE_MAP
+    from mock_gmail.web.sso import GmailWebSessionMiddleware, set_jwks_static
+
+    jwks_static = middleware_kwargs.get("jwks_static")
+    if jwks_static is not None:
+        set_jwks_static(jwks_static)
+    target_app.add_middleware(GmailWebSessionMiddleware)
 
     # Added after full app assembly, so this middleware is OUTERMOST: requests
     # rejected here are not recorded in the action log.

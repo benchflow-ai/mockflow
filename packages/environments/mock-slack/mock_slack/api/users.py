@@ -9,7 +9,14 @@ from sqlalchemy.orm import Session
 import json
 
 from mock_slack.models import SlackUser, Workspace
-from .deps import get_db, resolve_workspace_id, resolve_current_user_id, encode_cursor, decode_cursor
+from .deps import (
+    get_db,
+    resolve_workspace_id,
+    encode_cursor,
+    decode_cursor,
+    guard_impersonation,
+    resolve_auth_local_id,
+)
 from .schemas import (
     UserSchema,
     UserProfileSchema,
@@ -174,10 +181,18 @@ def users_lookup_by_email(
 
 @router.get("/users.profile.get")
 def users_profile_get(
+    request: Request,
     user: str | None = Query(None),
     db: Session = Depends(get_db),
     workspace_id: str = Depends(resolve_workspace_id),
 ):
+    # auth: with no explicit user, "self" is the verified token's
+    # RESOLVED local identity (sub, else email-claim fallback). Reading
+    # ANOTHER user's profile by explicit id stays a legitimate directory
+    # read, like real Slack.
+    if user is None:
+        user = resolve_auth_local_id(request, db)
+
     if user:
         u = (
             db.query(SlackUser)
@@ -188,7 +203,11 @@ def users_profile_get(
         # Return first non-bot user's profile
         u = (
             db.query(SlackUser)
-            .filter(SlackUser.workspace_id == workspace_id, SlackUser.is_bot == False)
+            .filter(
+                SlackUser.workspace_id == workspace_id,
+                SlackUser.is_bot == False,
+                SlackUser.id != "USLACKBOT",
+            )
             .first()
         )
     if not u:
@@ -209,6 +228,16 @@ async def users_profile_set(
         data = dict(await request.form())
 
     user_id = data.get("user")
+
+    # auth: a profile WRITE may only target the verified token's own
+    # identity (its sub or the RESOLVED local id from the email-claim
+    # fallback). An explicit mismatching `user` is impersonation (contract
+    # 403, reported to auth); the effective target is always the
+    # resolved local identity.
+    auth_sub = getattr(request.state, "auth_user_id", None)
+    if auth_sub is not None:
+        guard_impersonation(request, user_id, db)
+        user_id = resolve_auth_local_id(request, db)
 
     if user_id:
         u = (
@@ -257,7 +286,6 @@ async def users_set_presence(
     request: Request,
     db: Session = Depends(get_db),
     workspace_id: str = Depends(resolve_workspace_id),
-    current_user_id: str = Depends(resolve_current_user_id),
 ):
     try:
         data = await request.json()
@@ -266,11 +294,26 @@ async def users_set_presence(
 
     presence = data.get("presence", "auto")
 
-    u = (
-        db.query(SlackUser)
-        .filter(SlackUser.workspace_id == workspace_id, SlackUser.id == current_user_id)
-        .first()
-    )
+    # auth: presence is set on the verified token's RESOLVED local
+    # identity (sub, else email-claim fallback), never on the legacy "first
+    # non-bot user" fallback.
+    auth_local = resolve_auth_local_id(request, db)
+    if auth_local is not None:
+        u = (
+            db.query(SlackUser)
+            .filter(SlackUser.id == auth_local, SlackUser.workspace_id == workspace_id)
+            .first()
+        )
+    else:
+        u = (
+            db.query(SlackUser)
+            .filter(
+                SlackUser.workspace_id == workspace_id,
+                SlackUser.is_bot == False,
+                SlackUser.id != "USLACKBOT",
+            )
+            .first()
+        )
     if u:
         u.presence = presence
         db.commit()
@@ -280,10 +323,17 @@ async def users_set_presence(
 
 @router.get("/users.getPresence")
 async def users_get_presence(
+    request: Request,
     user: str = Query(None),
     db: Session = Depends(get_db),
     workspace_id: str = Depends(resolve_workspace_id),
 ):
+    # auth: with no explicit user, "self" is the verified token's
+    # RESOLVED local identity (sub, else email-claim fallback). Explicit
+    # reads of other users' presence stay legitimate, like real Slack.
+    if not user:
+        user = resolve_auth_local_id(request, db)
+
     if user:
         u = (
             db.query(SlackUser)
