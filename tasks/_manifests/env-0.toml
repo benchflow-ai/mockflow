@@ -61,6 +61,11 @@ command = "mock-slack --db /data/slack.db serve --host 0.0.0.0 --port 9005 --no-
 port    = 9005
 
 [[environment.services]]
+name    = "mock-discord"
+command = "mock-discord --db /data/discord.db serve --host 0.0.0.0 --port 9006 --no-mcp"
+port    = 9006
+
+[[environment.services]]
 name    = "mock-stripe"
 command = "mock-stripe --db /data/stripe.db serve --host 0.0.0.0 --port 9007 --no-mcp"
 port    = 9007

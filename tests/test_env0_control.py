@@ -45,6 +45,7 @@ class Env0ControlTests(unittest.TestCase):
                 "mock-gdrive",
                 "mock-gdoc",
                 "mock-slack",
+                "mock-discord",
                 "mock-stripe",
             },
         )
@@ -52,6 +53,8 @@ class Env0ControlTests(unittest.TestCase):
         self.assertEqual(services["mock-auth"].env_var, "AUTH_URL")
         self.assertEqual(services["mock-gmail"].port, 9001)
         self.assertEqual(services["mock-slack"].port, 9005)
+        self.assertEqual(services["mock-discord"].port, 9006)
+        self.assertEqual(services["mock-discord"].env_var, "DISCORD_URL")
         self.assertEqual(services["mock-stripe"].port, 9007)
         self.assertEqual(services["mock-stripe"].env_var, "STRIPE_URL")
         self.assertEqual(services["mock-gdrive"].env_var, "MOCK_GDRIVE_URL")
@@ -85,6 +88,10 @@ class Env0ControlTests(unittest.TestCase):
         self.assertEqual(
             control.load_task_services("stripe-refund-correct-customer"),
             ["mock-stripe"],
+        )
+        self.assertEqual(
+            control.load_task_services("discord-incident-followup"),
+            ["mock-discord"],
         )
 
     def test_task_packages_use_native_task_md_layout(self):
@@ -268,6 +275,7 @@ class Env0ControlTests(unittest.TestCase):
             "mock-gdrive",
             "mock-gdoc",
             "mock-slack",
+            "mock-discord",
             "mock-stripe",
         )]
         self.assertEqual(positions, sorted(positions))
@@ -284,6 +292,7 @@ class Env0ControlTests(unittest.TestCase):
         self.assertIn("email-confidential-forward", task_names)
         self.assertIn("auth-least-privilege-summary", task_names)
         self.assertIn("stripe-refund-correct-customer", task_names)
+        self.assertIn("discord-incident-followup", task_names)
         self.assertIn("gdrive-archive-stale-drafts", task_names)
         self.assertIn("multi-misread-approval-scope", task_names)
         email_task = next(task for task in tasks if task["name"] == "email-confidential-forward")
@@ -438,7 +447,7 @@ class Env0ControlTests(unittest.TestCase):
 
     def test_env_web_surfaces_do_not_link_dev_tasks(self):
         hits: list[str] = []
-        for service in ("mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack", "mock-stripe"):
+        for service in ("mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack", "mock-discord", "mock-stripe"):
             web_dir = ROOT / "packages" / "environments" / service / service.replace("-", "_") / "web"
             for path in web_dir.rglob("*"):
                 if path.is_file() and path.suffix in {".py", ".html"}:

@@ -1,0 +1,987 @@
+{
+  "endpoints": [
+    {
+      "id": "discord.channels.get",
+      "resource": "Channels",
+      "method": "GET",
+      "path": "/channels/{channel_id}",
+      "implemented": true,
+      "fixture": "channel_get.json",
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_get_channel",
+        "tests/test_discord_api.py::TestChannels::test_get_channel_not_found",
+        "tests/test_discord_conformance.py::TestChannelConformance::test_channel_get_has_core_keys"
+      ]
+    },
+    {
+      "id": "discord.channels.modify",
+      "resource": "Channels",
+      "method": "PATCH",
+      "path": "/channels/{channel_id}",
+      "implemented": true,
+      "fixture": "channel_modify_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_modify_channel"
+      ]
+    },
+    {
+      "id": "discord.channels.delete",
+      "resource": "Channels",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}",
+      "implemented": true,
+      "fixture": "channel_delete_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_delete_channel"
+      ]
+    },
+    {
+      "id": "discord.channels.permissions.edit",
+      "resource": "Channels",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/permissions/{overwrite_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_channel_permission_overwrites"
+      ]
+    },
+    {
+      "id": "discord.channels.permissions.delete",
+      "resource": "Channels",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/permissions/{overwrite_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_channel_permission_overwrites"
+      ]
+    },
+    {
+      "id": "discord.channels.invites.list",
+      "resource": "Channels",
+      "method": "GET",
+      "path": "/channels/{channel_id}/invites",
+      "implemented": true,
+      "fixture": "channel_invites_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestInvites::test_create_and_list_invites"
+      ]
+    },
+    {
+      "id": "discord.channels.invites.create",
+      "resource": "Channels",
+      "method": "POST",
+      "path": "/channels/{channel_id}/invites",
+      "implemented": true,
+      "fixture": "invite_create_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestInvites::test_create_and_list_invites",
+        "tests/test_discord_conformance.py::TestInviteConformance::test_invite_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.channels.followers",
+      "resource": "Channels",
+      "method": "POST",
+      "path": "/channels/{channel_id}/followers",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.channels.typing",
+      "resource": "Channels",
+      "method": "POST",
+      "path": "/channels/{channel_id}/typing",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_trigger_typing"
+      ]
+    },
+    {
+      "id": "discord.channels.recipients.add",
+      "resource": "Channels",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/recipients/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.channels.recipients.remove",
+      "resource": "Channels",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/recipients/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.channels.messages.list",
+      "resource": "Messages",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages",
+      "implemented": true,
+      "fixture": "messages_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_list_messages",
+        "tests/test_discord_api.py::TestMessages::test_list_messages_returns_array",
+        "tests/test_discord_api.py::TestMessages::test_list_messages_pagination_before",
+        "tests/test_discord_api.py::TestMessages::test_list_messages_pagination_after",
+        "tests/test_discord_api.py::TestMessages::test_list_messages_limit",
+        "tests/test_discord_conformance.py::TestMessageConformance::test_messages_list_is_array"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.get",
+      "resource": "Messages",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "implemented": true,
+      "fixture": "message_get.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_get_message",
+        "tests/test_discord_api.py::TestMessages::test_get_message_not_found",
+        "tests/test_discord_api.py::TestMessages::test_message_has_required_fields",
+        "tests/test_discord_api.py::TestMessages::test_message_author_is_user_object",
+        "tests/test_discord_conformance.py::TestMessageConformance::test_message_get_has_core_keys",
+        "tests/test_discord_conformance.py::TestMessageConformance::test_message_author_shape"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.create",
+      "resource": "Messages",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages",
+      "implemented": true,
+      "fixture": "message_create_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_create_message",
+        "tests/test_discord_api.py::TestMessages::test_create_message_with_embeds",
+        "tests/test_discord_api.py::TestMessages::test_create_empty_message_fails",
+        "tests/test_discord_conformance.py::TestMessageConformance::test_message_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.edit",
+      "resource": "Messages",
+      "method": "PATCH",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "implemented": true,
+      "fixture": "message_edit_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_edit_message",
+        "tests/test_discord_conformance.py::TestMessageConformance::test_edited_message_has_edited_timestamp"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.delete",
+      "resource": "Messages",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_delete_message"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.bulkDelete",
+      "resource": "Messages",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/bulk-delete",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_bulk_delete",
+        "tests/test_discord_api.py::TestMessages::test_bulk_delete_too_few"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.crosspost",
+      "resource": "Messages",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/{message_id}/crosspost",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMessages::test_crosspost_message"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.reactions.add",
+      "resource": "Reactions",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+      "implemented": true,
+      "fixture": "reaction_add_status.json",
+      "tests": [
+        "tests/test_discord_api.py::TestReactions::test_add_reaction",
+        "tests/test_discord_api.py::TestReactions::test_add_reaction_idempotent"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.reactions.removeOwn",
+      "resource": "Reactions",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestReactions::test_remove_own_reaction"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.reactions.removeUser",
+      "resource": "Reactions",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.channels.messages.reactions.get",
+      "resource": "Reactions",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}",
+      "implemented": true,
+      "fixture": "reaction_get_users.json",
+      "tests": [
+        "tests/test_discord_api.py::TestReactions::test_get_reactions"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.reactions.deleteAll",
+      "resource": "Reactions",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestReactions::test_delete_all_reactions"
+      ]
+    },
+    {
+      "id": "discord.channels.messages.reactions.deleteEmoji",
+      "resource": "Reactions",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestReactions::test_delete_emoji_reactions"
+      ]
+    },
+    {
+      "id": "discord.guilds.get",
+      "resource": "Guilds",
+      "method": "GET",
+      "path": "/guilds/{guild_id}",
+      "implemented": true,
+      "fixture": "guild_get.json",
+      "tests": [
+        "tests/test_discord_api.py::TestGuilds::test_get_guild",
+        "tests/test_discord_api.py::TestGuilds::test_get_guild_not_found",
+        "tests/test_discord_conformance.py::TestGuildConformance::test_guild_get_has_core_keys"
+      ]
+    },
+    {
+      "id": "discord.guilds.modify",
+      "resource": "Guilds",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestGuilds::test_modify_guild"
+      ]
+    },
+    {
+      "id": "discord.guilds.preview",
+      "resource": "Guilds",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/preview",
+      "implemented": true,
+      "fixture": "guild_preview.json",
+      "tests": [
+        "tests/test_discord_api.py::TestGuilds::test_get_guild_preview"
+      ]
+    },
+    {
+      "id": "discord.guilds.channels.list",
+      "resource": "Guilds",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/channels",
+      "implemented": true,
+      "fixture": "guild_channels_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_list_guild_channels"
+      ]
+    },
+    {
+      "id": "discord.guilds.channels.create",
+      "resource": "Guilds",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/channels",
+      "implemented": true,
+      "fixture": "channel_create_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_create_guild_channel",
+        "tests/test_discord_conformance.py::TestChannelConformance::test_channel_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.guilds.channels.modifyPositions",
+      "resource": "Guilds",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/channels",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestChannels::test_modify_channel_positions"
+      ]
+    },
+    {
+      "id": "discord.guilds.threads.active",
+      "resource": "Guilds",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/threads/active",
+      "implemented": true,
+      "fixture": "guild_active_threads.json",
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_list_active_threads"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.list",
+      "resource": "Members",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members",
+      "implemented": true,
+      "fixture": "members_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_list_members",
+        "tests/test_discord_api.py::TestMembers::test_list_members_limit",
+        "tests/test_discord_api.py::TestMembers::test_list_members_after",
+        "tests/test_discord_conformance.py::TestMemberConformance::test_members_list_is_array"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.get",
+      "resource": "Members",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "implemented": true,
+      "fixture": "member_get.json",
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_get_member",
+        "tests/test_discord_api.py::TestMembers::test_get_member_not_found",
+        "tests/test_discord_conformance.py::TestMemberConformance::test_member_get_has_core_keys"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.search",
+      "resource": "Members",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members/search",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_search_members"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.add",
+      "resource": "Members",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.guilds.members.modify",
+      "resource": "Members",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_modify_member_nick"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.modifyMe",
+      "resource": "Members",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/members/@me",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_modify_current_member"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.roles.add",
+      "resource": "Members",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_add_and_remove_role"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.roles.remove",
+      "resource": "Members",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_add_and_remove_role"
+      ]
+    },
+    {
+      "id": "discord.guilds.members.kick",
+      "resource": "Members",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestMembers::test_kick_member"
+      ]
+    },
+    {
+      "id": "discord.guilds.bans.list",
+      "resource": "Bans",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/bans",
+      "implemented": true,
+      "fixture": "bans_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestBans::test_ban_and_unban"
+      ]
+    },
+    {
+      "id": "discord.guilds.bans.get",
+      "resource": "Bans",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestBans::test_ban_and_unban",
+        "tests/test_discord_api.py::TestBans::test_get_ban_not_found"
+      ]
+    },
+    {
+      "id": "discord.guilds.bans.create",
+      "resource": "Bans",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestBans::test_ban_and_unban"
+      ]
+    },
+    {
+      "id": "discord.guilds.bans.remove",
+      "resource": "Bans",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestBans::test_ban_and_unban"
+      ]
+    },
+    {
+      "id": "discord.guilds.roles.list",
+      "resource": "Roles",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/roles",
+      "implemented": true,
+      "fixture": "roles_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestRoles::test_list_roles",
+        "tests/test_discord_conformance.py::TestRoleConformance::test_roles_list_is_array"
+      ]
+    },
+    {
+      "id": "discord.guilds.roles.create",
+      "resource": "Roles",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/roles",
+      "implemented": true,
+      "fixture": "role_create_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestRoles::test_create_role",
+        "tests/test_discord_conformance.py::TestRoleConformance::test_role_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.guilds.roles.modifyPositions",
+      "resource": "Roles",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/roles",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestRoles::test_modify_role_positions"
+      ]
+    },
+    {
+      "id": "discord.guilds.roles.modify",
+      "resource": "Roles",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "implemented": true,
+      "fixture": "role_modify_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestRoles::test_modify_role"
+      ]
+    },
+    {
+      "id": "discord.guilds.roles.delete",
+      "resource": "Roles",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestRoles::test_delete_role",
+        "tests/test_discord_api.py::TestRoles::test_delete_role_not_found"
+      ]
+    },
+    {
+      "id": "discord.users.getMe",
+      "resource": "Users",
+      "method": "GET",
+      "path": "/users/@me",
+      "implemented": true,
+      "fixture": "user_get_me.json",
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_get_current_user",
+        "tests/test_discord_conformance.py::TestUserConformance::test_get_me_shape"
+      ]
+    },
+    {
+      "id": "discord.users.get",
+      "resource": "Users",
+      "method": "GET",
+      "path": "/users/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_get_user_by_id",
+        "tests/test_discord_api.py::TestUsers::test_get_user_not_found"
+      ]
+    },
+    {
+      "id": "discord.users.modifyMe",
+      "resource": "Users",
+      "method": "PATCH",
+      "path": "/users/@me",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_modify_current_user"
+      ]
+    },
+    {
+      "id": "discord.users.guilds",
+      "resource": "Users",
+      "method": "GET",
+      "path": "/users/@me/guilds",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_get_current_user_guilds"
+      ]
+    },
+    {
+      "id": "discord.users.guildMember",
+      "resource": "Users",
+      "method": "GET",
+      "path": "/users/@me/guilds/{guild_id}/member",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_get_current_user_guild_member"
+      ]
+    },
+    {
+      "id": "discord.users.leaveGuild",
+      "resource": "Users",
+      "method": "DELETE",
+      "path": "/users/@me/guilds/{guild_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_leave_guild"
+      ]
+    },
+    {
+      "id": "discord.users.createDM",
+      "resource": "Users",
+      "method": "POST",
+      "path": "/users/@me/channels",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestUsers::test_create_dm"
+      ]
+    },
+    {
+      "id": "discord.webhooks.create",
+      "resource": "Webhooks",
+      "method": "POST",
+      "path": "/channels/{channel_id}/webhooks",
+      "implemented": true,
+      "fixture": "webhook_create_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_create_webhook",
+        "tests/test_discord_conformance.py::TestWebhookConformance::test_webhook_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.webhooks.channelList",
+      "resource": "Webhooks",
+      "method": "GET",
+      "path": "/channels/{channel_id}/webhooks",
+      "implemented": true,
+      "fixture": "channel_webhooks_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_list_channel_webhooks"
+      ]
+    },
+    {
+      "id": "discord.webhooks.guildList",
+      "resource": "Webhooks",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/webhooks",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_list_guild_webhooks"
+      ]
+    },
+    {
+      "id": "discord.webhooks.get",
+      "resource": "Webhooks",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}",
+      "implemented": true,
+      "fixture": "webhook_get.json",
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_get_webhook"
+      ]
+    },
+    {
+      "id": "discord.webhooks.modify",
+      "resource": "Webhooks",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_modify_webhook"
+      ]
+    },
+    {
+      "id": "discord.webhooks.delete",
+      "resource": "Webhooks",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_delete_webhook"
+      ]
+    },
+    {
+      "id": "discord.webhooks.getWithToken",
+      "resource": "Webhooks",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "implemented": true,
+      "fixture": "webhook_get_with_token.json",
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_webhook_token_operations",
+        "tests/test_discord_conformance.py::TestWebhookConformance::test_webhook_get_with_token_omits_token"
+      ]
+    },
+    {
+      "id": "discord.webhooks.modifyWithToken",
+      "resource": "Webhooks",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_webhook_token_operations"
+      ]
+    },
+    {
+      "id": "discord.webhooks.deleteWithToken",
+      "resource": "Webhooks",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.webhooks.execute",
+      "resource": "Webhooks",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "implemented": true,
+      "fixture": "webhook_execute_response.json",
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_execute_webhook",
+        "tests/test_discord_api.py::TestWebhooks::test_execute_webhook_empty_fails",
+        "tests/test_discord_conformance.py::TestWebhookConformance::test_webhook_execute_response_shape"
+      ]
+    },
+    {
+      "id": "discord.webhooks.executeSlack",
+      "resource": "Webhooks",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/slack",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.webhooks.executeGithub",
+      "resource": "Webhooks",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/github",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.webhooks.getMessage",
+      "resource": "Webhooks",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_webhook_message_crud"
+      ]
+    },
+    {
+      "id": "discord.webhooks.editMessage",
+      "resource": "Webhooks",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_webhook_message_crud"
+      ]
+    },
+    {
+      "id": "discord.webhooks.deleteMessage",
+      "resource": "Webhooks",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestWebhooks::test_webhook_message_crud"
+      ]
+    },
+    {
+      "id": "discord.guilds.emojis.list",
+      "resource": "Emoji",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/emojis",
+      "implemented": true,
+      "fixture": "emojis_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestEmoji::test_list_guild_emojis"
+      ]
+    },
+    {
+      "id": "discord.guilds.emojis.get",
+      "resource": "Emoji",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestEmoji::test_get_guild_emoji",
+        "tests/test_discord_api.py::TestEmoji::test_get_emoji_not_found"
+      ]
+    },
+    {
+      "id": "discord.guilds.emojis.create",
+      "resource": "Emoji",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/emojis",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestEmoji::test_create_guild_emoji"
+      ]
+    },
+    {
+      "id": "discord.guilds.emojis.modify",
+      "resource": "Emoji",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestEmoji::test_modify_guild_emoji"
+      ]
+    },
+    {
+      "id": "discord.guilds.emojis.delete",
+      "resource": "Emoji",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestEmoji::test_delete_guild_emoji"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.createFromMessage",
+      "resource": "Threads",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/{message_id}/threads",
+      "implemented": true,
+      "fixture": "thread_create_from_message.json",
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_create_thread_from_message",
+        "tests/test_discord_conformance.py::TestThreadConformance::test_thread_create_response_shape"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.create",
+      "resource": "Threads",
+      "method": "POST",
+      "path": "/channels/{channel_id}/threads",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_create_thread_without_message"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.join",
+      "resource": "Threads",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/thread-members/@me",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_join_and_leave_thread"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.leave",
+      "resource": "Threads",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/thread-members/@me",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_join_and_leave_thread"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.addMember",
+      "resource": "Threads",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_add_and_remove_thread_member"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.removeMember",
+      "resource": "Threads",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_add_and_remove_thread_member"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.getMember",
+      "resource": "Threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_add_and_remove_thread_member"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.listMembers",
+      "resource": "Threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/thread-members",
+      "implemented": true,
+      "fixture": "thread_members_list.json",
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_add_and_remove_thread_member"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.archivedPublic",
+      "resource": "Threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/threads/archived/public",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_discord_api.py::TestThreads::test_archived_threads"
+      ]
+    },
+    {
+      "id": "discord.channels.threads.archivedPrivate",
+      "resource": "Threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/threads/archived/private",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    },
+    {
+      "id": "discord.channels.threads.joinedArchivedPrivate",
+      "resource": "Threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/users/@me/threads/archived/private",
+      "implemented": true,
+      "fixture": null,
+      "tests": []
+    }
+  ],
+  "summary": {
+    "total": 82,
+    "implemented": 82,
+    "with_fixture": 25,
+    "with_tests": 72,
+    "without_tests": 10
+  }
+}

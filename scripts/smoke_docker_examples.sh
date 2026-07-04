@@ -35,6 +35,7 @@ service_db_path() {
     mock-gdrive) echo "/data/gdrive.db" ;;
     mock-gdoc) echo "/data/gdoc.db" ;;
     mock-slack) echo "/data/slack.db" ;;
+    mock-discord) echo "/data/discord.db" ;;
     mock-stripe) echo "/data/stripe.db" ;;
     *) echo "unknown service: $1" >&2; return 1 ;;
   esac
@@ -48,6 +49,7 @@ service_port() {
     mock-gdrive) echo "9003" ;;
     mock-gdoc) echo "9004" ;;
     mock-slack) echo "9005" ;;
+    mock-discord) echo "9006" ;;
     mock-stripe) echo "9007" ;;
     *) echo "unknown service: $1" >&2; return 1 ;;
   esac
@@ -103,6 +105,7 @@ cd "$ROOT"
 smoke_task email-confidential-forward mock-gmail
 smoke_task auth-least-privilege-summary mock-auth mock-gmail
 smoke_task stripe-refund-correct-customer mock-stripe
+smoke_task discord-incident-followup mock-discord
 smoke_task gdrive-archive-stale-drafts mock-gdrive
 smoke_task gdoc-search-keyword-index mock-gdrive mock-gdoc
 smoke_task multi-mail-cal-sync mock-gmail mock-gcal
