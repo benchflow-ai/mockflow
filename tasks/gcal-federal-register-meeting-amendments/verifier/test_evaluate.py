@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 from pathlib import Path
 
-_tests_dir = Path(__file__).resolve().parent
+_task_root = Path(__file__).resolve().parent.parent
+_verifier_dir = _task_root / "verifier"
+os.environ.setdefault("TASKS_DIR", str(_task_root.parent))
+
 _spec = importlib.util.spec_from_file_location(
     "evaluate_gcal_federal_register",
     _verifier_dir / "evaluate.py",

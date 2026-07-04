@@ -89,12 +89,13 @@ def list_comments(
 ):
     """List all comments on a document."""
     check_document_access(db, documentId, user_id)
+    # Legacy Query has no .unique(); entity rows are deduped from joinedload
+    # collections when .all() materializes the results.
     comments = (
         db.query(Comment)
         .options(*_comment_load_options())
         .filter(Comment.document_id == documentId)
         .order_by(Comment.created_time.asc())
-        .unique()
         .all()
     )
     return CommentListResponse(

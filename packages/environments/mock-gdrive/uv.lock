@@ -713,6 +713,14 @@ mcp = [
     { name = "fastapi-mcp" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "cryptography" },
+    { name = "pyjwt" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.0" },
@@ -734,6 +742,14 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
 ]
 provides-extras = ["mcp", "dev", "all"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "cryptography", specifier = ">=43.0" },
+    { name = "pyjwt", specifier = ">=2.8" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23" },
+]
 
 [[package]]
 name = "oauthlib"

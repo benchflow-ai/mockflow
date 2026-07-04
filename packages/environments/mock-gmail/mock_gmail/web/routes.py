@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from mock_gmail.models import User, Message, Thread, Label, MessageLabel, Draft
 from mock_gmail.api.deps import get_db
+from mock_gmail.web import sso
 
 router = APIRouter()
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
@@ -365,6 +366,40 @@ def _build_dashboard_context(request: Request, db: Session, test_results=None) -
         "test_inventory": test_inventory,
         "schema_fidelity": schema_fidelity,
     }
+
+
+@router.get("/web/auth/callback", response_class=HTMLResponse)
+async def web_auth_callback(
+    request: Request,
+    next: str = Query("/"),
+    db: Session = Depends(get_db),
+):
+    """SSO landing: verify auth's identity assertion, establish the session.
+
+    auth redirects the browser here after authenticating, carrying a
+    short-lived signed identity assertion (``env_0_identity``). On success we set
+    the ``mock_gmail_user`` cookie (the gmail web session) to the resolved local
+    user and bounce back to the original page. An absent/invalid/expired
+    assertion restarts the login dance. See ``mock_gmail/web/sso.py``.
+    """
+    token = request.query_params.get(sso.ASSERTION_PARAM, "")
+    claims = await sso.verify_identity_assertion(token)
+    if claims is None:
+        # Tampered, expired, or missing -- send the browser back to log in.
+        return RedirectResponse(
+            sso.build_login_redirect(request, next), status_code=302
+        )
+
+    user = sso.resolve_assertion_user(db, claims)
+    if user is None:
+        return HTMLResponse(
+            "<h1>403 — authenticated identity has no Gmail mailbox</h1>",
+            status_code=403,
+        )
+
+    response = RedirectResponse(sso._safe_next(next), status_code=302)
+    response.set_cookie(sso.WEB_SESSION_COOKIE, user.id, httponly=True)
+    return response
 
 
 @router.get("/", response_class=HTMLResponse)

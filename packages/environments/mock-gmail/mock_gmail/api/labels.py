@@ -19,24 +19,40 @@ router = APIRouter()
 def _label_to_schema(label: Label, db: Session, include_counts: bool = False) -> LabelSchema:
     # Real Gmail: system labels in list response omit counts; counts only on labels.get
     if include_counts:
-        msg_total = db.query(MessageLabel).filter(MessageLabel.label_id == label.id).count()
+        # Labels are per-user (composite PK id+user_id) while message_labels
+        # stores bare label ids, so counts must be scoped to the label's user
+        # via the message's user_id.
+        msg_total = (
+            db.query(MessageLabel)
+            .join(Message)
+            .filter(MessageLabel.label_id == label.id, Message.user_id == label.user_id)
+            .count()
+        )
         msg_unread = (
             db.query(MessageLabel)
             .join(Message)
-            .filter(MessageLabel.label_id == label.id, Message.is_read == False)
+            .filter(
+                MessageLabel.label_id == label.id,
+                Message.user_id == label.user_id,
+                Message.is_read == False,
+            )
             .count()
         )
         # Compute thread counts dynamically from messages with this label
         threads_total = (
             db.query(func.count(func.distinct(Message.thread_id)))
             .join(MessageLabel)
-            .filter(MessageLabel.label_id == label.id)
+            .filter(MessageLabel.label_id == label.id, Message.user_id == label.user_id)
             .scalar()
         ) or 0
         threads_unread = (
             db.query(func.count(func.distinct(Message.thread_id)))
             .join(MessageLabel)
-            .filter(MessageLabel.label_id == label.id, Message.is_read == False)
+            .filter(
+                MessageLabel.label_id == label.id,
+                Message.user_id == label.user_id,
+                Message.is_read == False,
+            )
             .scalar()
         ) or 0
     else:
@@ -196,6 +212,14 @@ def delete_label(
         raise HTTPException(404, f"Label {labelId!r} not found")
     if label.type == LabelType.system.value:
         raise HTTPException(400, "Cannot delete system labels")
+    # message_labels has no FK/cascade to labels (composite label PK), so
+    # remove this user's message associations explicitly.
+    db.query(MessageLabel).filter(
+        MessageLabel.label_id == labelId,
+        MessageLabel.message_id.in_(
+            db.query(Message.id).filter(Message.user_id == _user_id).scalar_subquery()
+        ),
+    ).delete(synchronize_session=False)
     db.delete(label)
     db.commit()
     return {}

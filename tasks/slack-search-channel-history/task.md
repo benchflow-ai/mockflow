@@ -31,6 +31,9 @@ environment:
 benchflow:
   environment:
     manifest: ../_manifests/env-0.toml
+  env0:
+    services:
+    - mock-slack
 ---
 
 ## prompt

@@ -8,7 +8,7 @@ slack reads:   SEED_USERS, SEED_CHANNELS, SEED_MESSAGES, FILL_CONFIG
 from __future__ import annotations
 
 try:
-    from env_0_gdrive.seed.content import DOC
+    from mock_gdrive.seed.content import DOC
 except ImportError:
     DOC = "application/vnd.google-apps.document"
 

@@ -655,6 +655,15 @@ mcp = [
     { name = "fastapi-mcp" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "cryptography" },
+    { name = "pyjwt" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-json-report" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.0" },
@@ -675,6 +684,15 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
 ]
 provides-extras = ["mcp", "gym", "dev", "all"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "cryptography", specifier = ">=43.0" },
+    { name = "pyjwt", specifier = ">=2.8" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23" },
+    { name = "pytest-json-report", specifier = ">=1.5" },
+]
 
 [[package]]
 name = "numpy"

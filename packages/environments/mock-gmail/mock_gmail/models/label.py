@@ -43,8 +43,10 @@ HIDDEN_SYSTEM_LABELS = {
 class Label(Base):
     __tablename__ = "labels"
 
+    # Composite primary key (id, user_id): Gmail label ids like "INBOX" are
+    # per-user, so every user gets their own row for each system label.
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     type: Mapped[str] = mapped_column(SAEnum(LabelType), default=LabelType.user)
     color_bg: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -57,4 +59,7 @@ class Label(Base):
     threads_unread: Mapped[int] = mapped_column(Integer, default=0)
 
     user: Mapped["User"] = relationship(back_populates="labels")  # noqa: F821
-    message_labels: Mapped[list["MessageLabel"]] = relationship(back_populates="label", cascade="all, delete-orphan")  # noqa: F821
+    # NOTE: no relationship to MessageLabel. message_labels.label_id stores the
+    # bare Gmail label id; the owning user is determined via the message's
+    # user_id (messages and labels are both per-user). Label deletion cleans up
+    # MessageLabel rows explicitly in the labels API.
