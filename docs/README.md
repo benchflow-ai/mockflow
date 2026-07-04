@@ -19,6 +19,8 @@ validation.
   conformance status.
 - [Validated workflows](validated-workflows.md) — commands that have been run
   against this checkout and the intended preconditions for heavier commands.
+- [Run public tasks with BenchFlow](guides/run-tasks-with-benchflow.md) —
+  self-contained setup and subscription-agent task runs for public tasks.
 - [Contributing](../CONTRIBUTING.md) — repo boundaries, validation matrix, and
   pull request expectations.
 - [Security policy](../SECURITY.md) — private vulnerability reporting and

@@ -2,7 +2,7 @@
 # Fetch state/diff/action_log from slack and run evaluate.py
 set -euo pipefail
 
-BASE="${SLACK_URL:-http://localhost:9002}"
+BASE="${SLACK_URL:-http://localhost:9005}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 mkdir -p "$LOGS_DIR"
 

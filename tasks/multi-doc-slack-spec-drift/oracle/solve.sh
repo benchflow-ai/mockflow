@@ -8,8 +8,8 @@ set -euo pipefail
 # 4. Add comments for each drift
 
 DOCS="${DOCS_URL:-http://localhost:9004}"
-DRIVE="${DRIVE_URL:-http://localhost:9005}"
-SLACK="${SLACK_URL:-http://localhost:9002}"
+DRIVE="${GDRIVE_URL:-${DRIVE_URL:-http://localhost:9003}}"
+SLACK="${SLACK_URL:-http://localhost:9005}"
 
 python3 << 'PYEOF'
 import json
@@ -19,8 +19,8 @@ import sys
 import urllib.request
 
 DOCS = os.environ.get("DOCS_URL", "http://localhost:9004")
-DRIVE = os.environ.get("DRIVE_URL", "http://localhost:9005")
-SLACK = os.environ.get("SLACK_URL", "http://localhost:9002")
+DRIVE = os.environ.get("GDRIVE_URL") or os.environ.get("DRIVE_URL", "http://localhost:9003")
+SLACK = os.environ.get("SLACK_URL", "http://localhost:9005")
 
 def gws(*args):
     """Run a gws command and return parsed JSON."""

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE="${SLACK_URL:-http://localhost:9002}"
+BASE="${SLACK_URL:-http://localhost:9005}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 mkdir -p "$LOGS_DIR"
 

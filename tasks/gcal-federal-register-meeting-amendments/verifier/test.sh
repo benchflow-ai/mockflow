@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GCAL="${CALENDAR_URL:-http://localhost:9003}"
+GCAL="${GCAL_URL:-${CALENDAR_URL:-http://localhost:9002}}"
 LOGS_DIR="${LOGS_DIR:-/logs/verifier}"
 mkdir -p "$LOGS_DIR"
 

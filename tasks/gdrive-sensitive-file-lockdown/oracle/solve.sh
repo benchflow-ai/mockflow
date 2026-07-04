@@ -4,9 +4,6 @@
 # public blog drafts) from problematic overshares on sensitive files.
 set -euo pipefail
 
-# Step 1: List all files
-files_json=$(gws drive files list --params '{"fields": "files(id,name,mimeType)", "pageSize": 100}')
-
 # Sensitive file names to lock down
 SENSITIVE_NAMES=(
   "api-keys.env"
@@ -16,15 +13,25 @@ SENSITIVE_NAMES=(
 )
 
 for name in "${SENSITIVE_NAMES[@]}"; do
-  # Find the file ID
-  file_id=$(echo "$files_json" | python3 -c "
+  # Find the file ID by exact name. The task image contains more than one page
+  # of Drive items, so a single broad files.list can miss target files.
+  file_id=$(gws drive files list \
+    --params "$(python3 - "$name" <<'PY'
+import json
+import sys
+
+name = sys.argv[1]
+escaped = name.replace("'", "\\'")
+print(json.dumps({
+    "q": f"name = '{escaped}'",
+    "fields": "files(id,name,mimeType)",
+    "pageSize": 10,
+}))
+PY
+)" | python3 -c "
 import sys, json
-name = '''${name}'''
-files = json.load(sys.stdin)['files']
-for f in files:
-    if f['name'] == name:
-        print(f['id'])
-        break
+files = json.load(sys.stdin).get('files', [])
+print(files[0]['id'] if files else '')
 ")
 
   if [ -z "$file_id" ]; then

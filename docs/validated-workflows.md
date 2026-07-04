@@ -32,6 +32,37 @@ The `bench eval run` command is the end-to-end task validation path. It verifies
 that BenchFlow can build public task images, start the manifest-declared
 `mock-*` services, run oracle solutions, and score verifiers.
 
+For the public `tasks/` reference set and local Codex/Claude agent setup, use
+the self-contained guide in
+[`docs/guides/run-tasks-with-benchflow.md`](guides/run-tasks-with-benchflow.md).
+The all-task oracle baseline for the current public task set is:
+
+```bash
+BENCHFLOW_REWARD_LENIENT=1 bench eval run \
+  --tasks-dir tasks \
+  --include auth-least-privilege-summary \
+  --include discord-incident-followup \
+  --include email-confidential-forward \
+  --include email-no-wrong-recipients \
+  --include email-vendor-report-organize \
+  --include gcal-federal-register-meeting-amendments \
+  --include gdoc-search-keyword-index \
+  --include gdrive-sensitive-file-lockdown \
+  --include multi-doc-slack-spec-drift \
+  --include multi-mail-cal-sync \
+  --include slack-channel-reorg \
+  --include slack-search-channel-history \
+  --include stripe-refund-correct-customer \
+  --agent oracle \
+  --sandbox docker \
+  --context-root . \
+  --concurrency 1 \
+  --build-concurrency 1 \
+  --jobs-dir .local/bf-oracle-all-public
+```
+
+That command should complete with `13/13`, `errors=0`, and `idle_timeouts=0`.
+
 Maintainers can publish the release image with the `Publish Base Image` GitHub
 Actions workflow. The workflow uses the repository `GITHUB_TOKEN` with
 `packages: write`, pushes `ghcr.io/benchflow-ai/env0:<VERSION>` and `latest`,
