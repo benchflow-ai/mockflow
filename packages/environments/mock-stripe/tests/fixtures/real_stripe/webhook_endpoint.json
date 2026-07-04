@@ -1,0 +1,14 @@
+{
+  "id": "we_1Mr5jULkdIwHu7ix1ibLTM0x",
+  "object": "webhook_endpoint",
+  "api_version": null,
+  "application": null,
+  "created": 1680122196,
+  "description": null,
+  "enabled_events": ["charge.succeeded", "charge.failed"],
+  "livemode": false,
+  "metadata": {},
+  "secret": "whsec_wcgXQiBDmqkOCnMpCt4meFnoIIVhOdg2",
+  "status": "enabled",
+  "url": "https://example.com/my/webhook/endpoint"
+}

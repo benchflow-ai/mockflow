@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mock Stripe Dashboard</title>
+  <style>
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 2rem; color: #1a1f36; background: #f7fafc; }
+    h1 { font-size: 1.4rem; } h2 { font-size: 1.05rem; margin-top: 2rem; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; background: #e3e8ee; }
+    .pill.succeeded { background: #d6f5df; color: #0e6245; }
+    .pill.failed, .pill.canceled { background: #fde2dd; color: #a41c4e; }
+    .pill.requires_capture, .pill.requires_payment_method, .pill.requires_confirmation { background: #f8e5ba; color: #983705; }
+    table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e3e8ee; font-size: 0.85rem; }
+    th { background: #f7fafc; font-weight: 600; color: #697386; text-transform: uppercase; font-size: 0.72rem; }
+    code { font-size: 0.8rem; color: #5469d4; }
+    .balance { font-size: 1.6rem; font-weight: 700; color: #0e6245; }
+  </style>
+</head>
+<body>
+  <h1>Mock Stripe <span class="pill">test mode</span></h1>
+  <p>Available balance: <span class="balance">{{ "%.2f"|format(available / 100) }} USD</span></p>
+
+  <h2>Customers ({{ customers|length }})</h2>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Created</th></tr>
+    {% for c in customers %}
+    <tr><td><code>{{ c.id }}</code></td><td>{{ c.name or "—" }}</td><td>{{ c.email or "—" }}</td><td>{{ c.created }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Recent PaymentIntents</h2>
+  <table>
+    <tr><th>ID</th><th>Amount</th><th>Status</th><th>Customer</th></tr>
+    {% for pi in intents %}
+    <tr>
+      <td><code>{{ pi.id }}</code></td>
+      <td>{{ fmt(pi.amount, pi.currency) }}</td>
+      <td><span class="pill {{ pi.status }}">{{ pi.status }}</span></td>
+      <td>{{ customer_names.get(pi.customer_id, pi.customer_id or "—") }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Recent Charges</h2>
+  <table>
+    <tr><th>ID</th><th>Amount</th><th>Status</th><th>Captured</th><th>Refunded</th></tr>
+    {% for ch in charges %}
+    <tr>
+      <td><code>{{ ch.id }}</code></td>
+      <td>{{ fmt(ch.amount, ch.currency) }}</td>
+      <td><span class="pill {{ ch.status }}">{{ ch.status }}</span></td>
+      <td>{{ "yes" if ch.captured else "no" }}</td>
+      <td>{{ fmt(ch.amount_refunded, ch.currency) if ch.amount_refunded else "—" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

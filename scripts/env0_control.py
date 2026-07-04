@@ -28,7 +28,7 @@ ORACLE_ROOT = ROOT / ".data" / "oracle"
 HEALTH_PATH = "/health"
 DEV_PATHS = ("/dev/dashboard", "/dev/db-viewer", "/dev/api-explorer")
 TASK_DATA_SERVICES = {"mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"}
-TASK_SCENARIO_SERVICES = {"mock-auth"}
+TASK_SCENARIO_SERVICES = {"mock-auth", "mock-stripe"}
 DEVHUB_PORT = 9060
 
 

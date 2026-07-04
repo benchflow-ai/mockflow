@@ -38,12 +38,22 @@ class Env0ControlTests(unittest.TestCase):
 
         self.assertEqual(
             set(services),
-            {"mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"},
+            {
+                "mock-auth",
+                "mock-gmail",
+                "mock-gcal",
+                "mock-gdrive",
+                "mock-gdoc",
+                "mock-slack",
+                "mock-stripe",
+            },
         )
         self.assertEqual(services["mock-auth"].port, 9000)
         self.assertEqual(services["mock-auth"].env_var, "AUTH_URL")
         self.assertEqual(services["mock-gmail"].port, 9001)
         self.assertEqual(services["mock-slack"].port, 9005)
+        self.assertEqual(services["mock-stripe"].port, 9007)
+        self.assertEqual(services["mock-stripe"].env_var, "STRIPE_URL")
         self.assertEqual(services["mock-gdrive"].env_var, "MOCK_GDRIVE_URL")
         self.assertEqual(services["mock-gdoc"].gws_service, "docs")
 
@@ -71,6 +81,10 @@ class Env0ControlTests(unittest.TestCase):
         self.assertEqual(
             control.load_task_services("auth-least-privilege-summary"),
             ["mock-auth", "mock-gmail"],
+        )
+        self.assertEqual(
+            control.load_task_services("stripe-refund-correct-customer"),
+            ["mock-stripe"],
         )
 
     def test_task_packages_use_native_task_md_layout(self):
@@ -254,6 +268,7 @@ class Env0ControlTests(unittest.TestCase):
             "mock-gdrive",
             "mock-gdoc",
             "mock-slack",
+            "mock-stripe",
         )]
         self.assertEqual(positions, sorted(positions))
         self.assertIn(
@@ -268,6 +283,7 @@ class Env0ControlTests(unittest.TestCase):
         self.assertEqual(task_names, sorted(task_names))
         self.assertIn("email-confidential-forward", task_names)
         self.assertIn("auth-least-privilege-summary", task_names)
+        self.assertIn("stripe-refund-correct-customer", task_names)
         self.assertIn("gdrive-archive-stale-drafts", task_names)
         self.assertIn("multi-misread-approval-scope", task_names)
         email_task = next(task for task in tasks if task["name"] == "email-confidential-forward")
@@ -290,6 +306,22 @@ class Env0ControlTests(unittest.TestCase):
         self.assertIn("mock-auth", output)
         self.assertIn("--scenario task:auth-least-privilege-summary", output)
         self.assertIn("--task-data", output)
+
+    def test_seed_task_dry_run_uses_task_scenario_for_stripe(self):
+        services = control.task_subset("stripe-refund-correct-customer", control.load_services())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            seed_modes = control.seed_task(
+                "stripe-refund-correct-customer",
+                services,
+                dry_run=True,
+            )
+
+        output = stdout.getvalue()
+        self.assertEqual(seed_modes["mock-stripe"], "task-aware")
+        self.assertIn("mock-stripe", output)
+        self.assertIn("--scenario task:stripe-refund-correct-customer", output)
 
     def test_devhub_task_seed_posts_task_name_to_declared_services(self):
         calls: list[tuple[str, str]] = []
@@ -377,9 +409,36 @@ class Env0ControlTests(unittest.TestCase):
         )
         self.assertNotIn("task_data=", message)
 
+    def test_devhub_task_seed_posts_stripe_task_scenario(self):
+        calls: list[tuple[str, str]] = []
+        original = devhub.request_json
+
+        def fake_request_json(method: str, url: str, timeout: float = devhub.HTTP_TIMEOUT):
+            calls.append((method, url))
+            return True, {"status": "ok"}
+
+        devhub.request_json = fake_request_json
+        try:
+            message = devhub.perform_action(
+                "",
+                "seed-task",
+                task_name="stripe-refund-correct-customer",
+            )
+        finally:
+            devhub.request_json = original
+
+        self.assertIn("task=stripe-refund-correct-customer", message)
+        self.assertEqual(
+            calls,
+            [
+                ("POST", "http://127.0.0.1:9007/_admin/seed?scenario=task%3Astripe-refund-correct-customer"),
+            ],
+        )
+        self.assertNotIn("task_data=", message)
+
     def test_env_web_surfaces_do_not_link_dev_tasks(self):
         hits: list[str] = []
-        for service in ("mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack"):
+        for service in ("mock-auth", "mock-gmail", "mock-gcal", "mock-gdrive", "mock-gdoc", "mock-slack", "mock-stripe"):
             web_dir = ROOT / "packages" / "environments" / service / service.replace("-", "_") / "web"
             for path in web_dir.rglob("*"):
                 if path.is_file() and path.suffix in {".py", ".html"}:

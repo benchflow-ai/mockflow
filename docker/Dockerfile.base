@@ -11,6 +11,7 @@ COPY packages/environments/mock-gdoc /tmp/deps/mock-gdoc
 COPY packages/environments/mock-gdrive /tmp/deps/mock-gdrive
 COPY packages/environments/mock-gmail /tmp/deps/mock-gmail
 COPY packages/environments/mock-slack /tmp/deps/mock-slack
+COPY packages/environments/mock-stripe /tmp/deps/mock-stripe
 COPY packages/auth-client /tmp/deps/auth-client
 RUN for pkg in /tmp/deps/*/; do \
       uv pip install --system --no-build-isolation "$pkg"; \
@@ -67,6 +68,7 @@ ENV MOCK_GDOC_URL=http://localhost:9004
 ENV MOCK_GDRIVE_URL=http://localhost:9003
 ENV MOCK_GMAIL_URL=http://localhost:9001
 ENV MOCK_SLACK_URL=http://localhost:9005
+ENV STRIPE_URL=http://localhost:9007
 
 # Non-root agent user
 RUN useradd -m -s /bin/bash agent

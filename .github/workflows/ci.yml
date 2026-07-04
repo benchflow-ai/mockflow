@@ -32,6 +32,7 @@ jobs:
           - mock-gdoc
           - mock-gdrive
           - mock-slack
+          - mock-stripe
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

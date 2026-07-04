@@ -1,0 +1,11 @@
+{
+  "error": {
+    "type": "card_error",
+    "code": "card_declined",
+    "message": "Your card was declined",
+    "charge": "ch_1234567890",
+    "decline_code": "generic_decline",
+    "param": null,
+    "doc_url": "https://stripe.com/docs/error-codes/card-declined"
+  }
+}
