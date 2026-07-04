@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Authorize {{ client.client_name }} — auth{% endblock %}
+{% block content %}
+  <h1>{{ client.client_name }} wants to access your account</h1>
+  <div class="user-chip">{{ user.email }}</div>
+  <div class="subtitle">This will allow <strong>{{ client.client_name }}</strong> to:</div>
+  <ul class="scope-list">
+    {% for s in scopes %}
+      <li>{{ s.description }}<code>{{ s.name }}</code></li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="/o/oauth2/v2/auth/callback">
+    <input type="hidden" name="client_id" value="{{ client_id }}">
+    <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+    <input type="hidden" name="scope" value="{{ scope }}">
+    <input type="hidden" name="state" value="{{ state }}">
+    <input type="hidden" name="nonce" value="{{ nonce }}">
+    <input type="hidden" name="code_challenge" value="{{ code_challenge }}">
+    <input type="hidden" name="code_challenge_method" value="{{ code_challenge_method }}">
+    <div class="actions">
+      <button type="submit" name="decision" value="deny" class="secondary">Cancel</button>
+      <button type="submit" name="decision" value="allow" class="primary">Allow</button>
+    </div>
+  </form>
+{% endblock %}

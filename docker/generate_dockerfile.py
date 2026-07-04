@@ -17,6 +17,10 @@ TOML_PATH = ROOT / "config.toml"
 TMPL_PATH = ROOT / "docker" / "Dockerfile.base.tmpl"
 OUT_PATH = ROOT / "docker" / "Dockerfile.base"
 
+# Shared packages that resource servers may import at runtime. Keep these out
+# of config.toml because they are not standalone services.
+SHARED_PACKAGES = ["auth-client"]
+
 
 def parse_toml(toml_path: Path) -> dict:
     """Parse config.toml and return only mock-* environment sections."""
@@ -29,6 +33,11 @@ def builder_block(cfg: dict) -> str:
     names = sorted(cfg.keys())
     copy_lines = [
         f"COPY packages/environments/{name} /tmp/deps/{name}" for name in names
+    ]
+    copy_lines += [
+        f"COPY packages/{name} /tmp/deps/{name}"
+        for name in SHARED_PACKAGES
+        if (ROOT / "packages" / name).is_dir()
     ]
     install = (
         "RUN for pkg in /tmp/deps/*/; do \\\n"

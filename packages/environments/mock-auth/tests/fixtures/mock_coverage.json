@@ -1,0 +1,161 @@
+{
+  "endpoints": [
+    {
+      "id": "oauth2.discovery.openidConfiguration",
+      "resource": "Discovery",
+      "method": "GET",
+      "path": "/.well-known/openid-configuration",
+      "implemented": true,
+      "fixture": "openid_configuration.json",
+      "tests": [
+        "tests/test_api.py::TestDiscovery::test_discovery_endpoints",
+        "tests/test_conformance.py::TestDiscoveryConformance::test_discovery_required_keys"
+      ]
+    },
+    {
+      "id": "oauth2.certs.jwks",
+      "resource": "Discovery",
+      "method": "GET",
+      "path": "/oauth2/v3/certs",
+      "implemented": true,
+      "fixture": "jwks.json",
+      "tests": [
+        "tests/test_api.py::TestJWKS::test_jwks_shape",
+        "tests/test_conformance.py::TestJWKSConformance::test_jwk_entry_keys"
+      ]
+    },
+    {
+      "id": "oauth2.auth.authorize",
+      "resource": "Authorization",
+      "method": "GET",
+      "path": "/o/oauth2/v2/auth",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestAuthorizationEndpoint::test_auto_consent_redirects_with_code_and_state",
+        "tests/test_api.py::TestAuthorizationEndpoint::test_consent_screen_rendered_with_session"
+      ],
+      "skip_reason": "HTML consent screen; real capture would need a browser session — behavior validated functionally"
+    },
+    {
+      "id": "oauth2.auth.consentCallback",
+      "resource": "Authorization",
+      "method": "POST",
+      "path": "/o/oauth2/v2/auth/callback",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestAuthorizationEndpoint::test_consent_allow_issues_code",
+        "tests/test_api.py::TestAuthorizationEndpoint::test_consent_deny_redirects_access_denied"
+      ],
+      "skip_reason": "302 redirect with code; mock-specific consent form POST"
+    },
+    {
+      "id": "oauth2.token.exchange",
+      "resource": "Token",
+      "method": "POST",
+      "path": "/oauth2/token",
+      "implemented": true,
+      "fixture": "token_response.json",
+      "tests": [
+        "tests/test_api.py::TestTokenEndpointAuthCode::test_token_response_shape",
+        "tests/test_conformance.py::TestTokenConformance::test_token_response_keys"
+      ]
+    },
+    {
+      "id": "oauth2.token.refresh",
+      "resource": "Token",
+      "method": "POST",
+      "path": "/oauth2/token",
+      "implemented": true,
+      "fixture": "token_refresh_response.json",
+      "tests": [
+        "tests/test_api.py::TestRefreshRotation::test_refresh_rotates_token",
+        "tests/test_conformance.py::TestTokenConformance::test_refresh_response_keys"
+      ]
+    },
+    {
+      "id": "oauth2.token.clientCredentials",
+      "resource": "Token",
+      "method": "POST",
+      "path": "/oauth2/token",
+      "implemented": true,
+      "fixture": null,
+      "tests": [
+        "tests/test_api.py::TestClientCredentials::test_service_token_without_subject"
+      ],
+      "skip_reason": "Google service-account flow uses signed JWT assertions; auth uses standard client_credentials + subject= (documented divergence)"
+    },
+    {
+      "id": "oauth2.token.deviceCode",
+      "resource": "Token",
+      "method": "POST",
+      "path": "/oauth2/token",
+      "implemented": true,
+      "fixture": "token_error_invalid_grant.json",
+      "tests": [
+        "tests/test_api.py::TestDeviceFlow::test_admin_approve_then_token",
+        "tests/test_conformance.py::TestTokenConformance::test_invalid_grant_error_keys"
+      ]
+    },
+    {
+      "id": "oauth2.introspect",
+      "resource": "Introspection",
+      "method": "POST",
+      "path": "/oauth2/introspect",
+      "implemented": true,
+      "fixture": "tokeninfo_error_invalid.json",
+      "tests": [
+        "tests/test_api.py::TestIntrospection::test_active_access_token",
+        "tests/test_conformance.py::TestErrorConformance::test_tokeninfo_error_shape_documented"
+      ]
+    },
+    {
+      "id": "oauth2.revoke",
+      "resource": "Revocation",
+      "method": "POST",
+      "path": "/oauth2/revoke",
+      "implemented": true,
+      "fixture": "revoke_error_invalid_token.json",
+      "tests": [
+        "tests/test_api.py::TestRevocation::test_revoke_access_token_returns_200",
+        "tests/test_conformance.py::TestErrorConformance::test_revoke_always_200_documented_divergence"
+      ]
+    },
+    {
+      "id": "oauth2.userinfo.get",
+      "resource": "UserInfo",
+      "method": "GET",
+      "path": "/oauth2/v2/userinfo",
+      "implemented": true,
+      "fixture": "userinfo.json",
+      "tests": [
+        "tests/test_api.py::TestUserinfo::test_openid_email_profile_full",
+        "tests/test_conformance.py::TestUserinfoConformance::test_userinfo_keys"
+      ]
+    },
+    {
+      "id": "oauth2.userinfo.post",
+      "resource": "UserInfo",
+      "method": "POST",
+      "path": "/oauth2/v2/userinfo",
+      "implemented": true,
+      "fixture": "userinfo_error_invalid_credentials.json",
+      "tests": [
+        "tests/test_conformance.py::TestUserinfoConformance::test_userinfo_error_shape_documented_divergence"
+      ]
+    },
+    {
+      "id": "oauth2.device.code",
+      "resource": "DeviceAuthorization",
+      "method": "POST",
+      "path": "/oauth2/device/code",
+      "implemented": true,
+      "fixture": "device_code_response.json",
+      "tests": [
+        "tests/test_api.py::TestDeviceFlow::test_device_code_response_shape",
+        "tests/test_conformance.py::TestDeviceConformance::test_device_code_response_keys"
+      ]
+    }
+  ]
+}

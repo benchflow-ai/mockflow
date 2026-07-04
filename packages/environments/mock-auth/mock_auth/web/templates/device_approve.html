@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Connect a device — auth{% endblock %}
+{% block content %}
+  <h1>Connect a device</h1>
+  <div class="user-chip">{{ user.email }}</div>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  {% if device %}
+    <div class="subtitle"><strong>{{ client.client_name }}</strong> (code
+      <code>{{ device.user_code }}</code>) is requesting:</div>
+    <ul class="scope-list">
+      {% for s in scopes %}
+        <li>{{ s.description }}<code>{{ s.name }}</code></li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="/device/decision">
+      <input type="hidden" name="user_code" value="{{ device.user_code }}">
+      <div class="actions">
+        <button type="submit" name="decision" value="deny" class="secondary">Deny</button>
+        <button type="submit" name="decision" value="allow" class="primary">Allow</button>
+      </div>
+    </form>
+  {% else %}
+    <div class="subtitle">Enter the code shown on your device.</div>
+    <form method="get" action="/device">
+      <input type="text" name="user_code" placeholder="XXXX-XXXX"
+             value="{{ user_code }}" required autofocus>
+      <div class="actions">
+        <button type="submit" class="primary">Continue</button>
+      </div>
+    </form>
+  {% endif %}
+{% endblock %}
