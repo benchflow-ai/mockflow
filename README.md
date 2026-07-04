@@ -142,7 +142,9 @@ Run the push command only when GHCR package permissions are configured.
 
 - Use `config.toml` as the single source of truth for service metadata.
 - Use current `mock-*` service names and `MOCK_*_URL` environment variables.
-- Select task services with `task.md` frontmatter `benchflow.env0.services`.
+- Expose evaluator services through `task.md` frontmatter
+  `benchflow.environment.manifest`.
+- Keep `benchflow.env0.services` for repo-local dev launcher task seeding only.
 - Do not infer services from Dockerfile text.
 - Keep raw `--task-data` and task-data-path plumbing internal to env CLIs,
   control scripts, and Dockerfiles.
@@ -160,10 +162,16 @@ python3 devhub/app.py --render-once
 cd packages/environments/mock-gdrive && uv run --extra dev pytest tests -q
 cd packages/environments/mock-gdrive && uv run --extra dev pytest tests/test_conformance.py -q
 PULL_BASE=0 scripts/smoke_docker_examples.sh
+BENCHFLOW_REWARD_LENIENT=1 bench eval run \
+  --tasks-dir example_tasks --agent oracle --sandbox docker \
+  --context-root . --jobs-dir .local/bf-jobs-public-examples
 ```
 
 Use the per-service pytest command for the service you changed. Docker checks are
-required before and after Dockerfile or base-image changes.
+required before and after Dockerfile or base-image changes. The `bench eval run`
+command is the end-to-end task check: it builds task images, starts the public
+mock services through `tasks/_manifests/env-0.toml`, runs each oracle, and scores
+each verifier.
 
 ## Repo Layout
 

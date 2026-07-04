@@ -19,11 +19,18 @@ seeding, and devhub rendering.
 ```bash
 docker/build-base.sh
 PULL_BASE=0 scripts/smoke_docker_examples.sh
+BENCHFLOW_REWARD_LENIENT=1 bench eval run \
+  --tasks-dir example_tasks --agent oracle --sandbox docker \
+  --context-root . --jobs-dir .local/bf-jobs-public-examples
 ```
 
 `PULL_BASE=0` is intentional for local validation: it uses the base image built
 by `docker/build-base.sh`. Use the default pull behavior only after a maintainer
 has pushed `ghcr.io/benchflow-ai/env0:<VERSION>`.
+
+The `bench eval run` command is the end-to-end task validation path. It verifies
+that BenchFlow can build public task images, start the manifest-declared
+`mock-*` services, run oracle solutions, and score verifiers.
 
 Maintainers can publish the release image with the `Publish Base Image` GitHub
 Actions workflow. The workflow uses the repository `GITHUB_TOKEN` with
@@ -52,4 +59,5 @@ done
 ```
 
 This validates copied BenchFlow task packages structurally. Running them
-end-to-end also requires a usable `env-0-base` image and the BenchFlow CLI.
+end-to-end also requires Docker, the BenchFlow CLI, and a pullable public env0
+base image.

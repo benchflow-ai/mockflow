@@ -11,7 +11,7 @@ def test_task_seed_works_without_tasks_dir(monkeypatch, db_path):
     reset_engine()
 
     stats = seed_database(
-        scenario="task:gdoc-search-by-title",
+        scenario="task:gdoc-search-keyword-index",
         seed=42,
         db_path=db_path,
     )

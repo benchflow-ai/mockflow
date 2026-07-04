@@ -17,9 +17,9 @@ Start only the services declared by a task:
 scripts/dev.sh task email-confidential-forward
 ```
 
-Tasks are resolved from `example_tasks/<name>`. The launcher reads
-`task.md` frontmatter `benchflow.env0.services`, then internally resolves
-`example_tasks/<name>/data/needles.py` for task-aware seeding. Raw
+Tasks are resolved from `example_tasks/<name>`. The repo-local launcher reads
+`task.md` frontmatter `benchflow.env0.services` for task-aware seeding, while
+BenchFlow evaluator startup uses `benchflow.environment.manifest`. Raw
 `--task-data` remains an internal env CLI detail, not the primary launcher UX.
 
 ## Control Contract
@@ -71,8 +71,8 @@ same admin/control contract for seed/reset/snapshot and restore actions.
 
 The task panel reads only `example_tasks/*`. Its seed button posts
 `task_name=<name>` to the running services declared by
-`task.md` frontmatter `benchflow.env0.services`. This prepares env state only; it does not
-run verifiers or evals.
+repo-local `task.md` frontmatter `benchflow.env0.services`. This prepares env
+state only; it does not run verifiers or evals.
 
 Env-local `/dev/tasks` menus/routes are intentionally not part of the dev
 surface. Repo task browsing and task-shaped seeding live in devhub; evaluator
