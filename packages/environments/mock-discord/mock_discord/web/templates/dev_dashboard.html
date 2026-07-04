@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Dashboard — Mock Discord</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900 min-h-screen">
+    <!-- Nav -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="/" class="font-bold text-lg text-indigo-600">Mock Discord</a>
+        <span class="text-gray-300">|</span>
+        <a href="/dev/dashboard" class="text-sm font-medium {% if active_tab == 'dashboard' %}text-indigo-600{% else %}text-gray-600 hover:text-gray-900{% endif %}">Dashboard</a>
+        <a href="/dev/api-explorer" class="text-sm font-medium {% if active_tab == 'api' %}text-indigo-600{% else %}text-gray-600 hover:text-gray-900{% endif %}">API Explorer</a>
+        <a href="/dev/db-viewer" class="text-sm font-medium {% if active_tab == 'db' %}text-indigo-600{% else %}text-gray-600 hover:text-gray-900{% endif %}">DB Viewer</a>
+      </div>
+      <a href="/docs" class="text-sm text-gray-500 hover:text-gray-700">Swagger UI</a>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-8">
+      {% block dev_content %}
+      <!-- Stats cards -->
+      <div class="grid grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+          <div class="text-2xl font-bold text-gray-900">{{ stats.messages }}</div>
+          <div class="text-sm text-gray-500">Messages</div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+          <div class="text-2xl font-bold text-gray-900">{{ stats.channels }}</div>
+          <div class="text-sm text-gray-500">Channels</div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+          <div class="text-2xl font-bold text-gray-900">{{ stats.members }}</div>
+          <div class="text-sm text-gray-500">Members</div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+          <div class="text-2xl font-bold text-gray-900">{{ stats.roles }}</div>
+          <div class="text-sm text-gray-500">Roles</div>
+        </div>
+      </div>
+
+      <!-- Test runner -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Test Runner</h2>
+          <button hx-post="/dev/dashboard/run-tests" hx-target="#test-results" hx-swap="innerHTML" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700">
+            Run Tests
+          </button>
+        </div>
+        <div id="test-results" class="text-sm text-gray-500">Click "Run Tests" to execute the test suite.</div>
+      </div>
+
+      <!-- API Endpoints summary -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <h2 class="text-lg font-semibold mb-4">API Coverage ({{ endpoint_count }} endpoints)</h2>
+        <div class="grid grid-cols-2 gap-3">
+          {% for resource, count in resource_counts.items() %}
+          <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded">
+            <span class="text-sm font-medium text-gray-700">{{ resource }}</span>
+            <span class="text-sm font-semibold text-indigo-600">{{ count }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endblock %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+{% extends "dev_dashboard.html" %}
+{% block dev_content %}
+<div class="flex items-center justify-between mb-4">
+  <h2 class="text-lg font-semibold">DB Viewer</h2>
+  <div class="flex items-center gap-2">
+    <label class="text-sm text-gray-600">Table:</label>
+    <select onchange="window.location.href='/dev/db-viewer?table='+this.value" class="border border-gray-300 rounded px-3 py-1.5 text-sm">
+      {% for name in table_names %}
+      <option value="{{ name }}" {% if name == current_table %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <span class="text-sm text-gray-500 ml-2">{{ total }} rows</span>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-gray-200 bg-gray-50">
+        {% for col in columns %}
+        <th class="text-left py-2 px-3 font-medium text-gray-600 whitespace-nowrap">{{ col }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr class="border-b border-gray-50 hover:bg-gray-50">
+        {% for col in columns %}
+        <td class="py-2 px-3 text-gray-700 max-w-xs truncate font-mono text-xs">{{ row[col] }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+      {% if not rows %}
+      <tr>
+        <td colspan="{{ columns | length }}" class="py-8 text-center text-gray-400">No data</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{% if total_pages > 1 %}
+<div class="flex items-center justify-center gap-2 mt-4">
+  {% if page > 1 %}
+  <a href="/dev/db-viewer?table={{ current_table }}&page={{ page - 1 }}" class="px-3 py-1 rounded border border-gray-300 text-sm hover:bg-gray-100">&laquo; Prev</a>
+  {% endif %}
+  <span class="text-sm text-gray-600">Page {{ page }} of {{ total_pages }}</span>
+  {% if page < total_pages %}
+  <a href="/dev/db-viewer?table={{ current_table }}&page={{ page + 1 }}" class="px-3 py-1 rounded border border-gray-300 text-sm hover:bg-gray-100">Next &raquo;</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

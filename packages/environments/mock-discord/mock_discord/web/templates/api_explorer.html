@@ -1,0 +1,35 @@
+{% extends "dev_dashboard.html" %}
+{% block dev_content %}
+<h2 class="text-lg font-semibold mb-4">API Explorer ({{ total }} endpoints)</h2>
+
+{% for resource, endpoints in grouped_endpoints.items() %}
+<div class="bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
+  <div class="px-4 py-3 border-b border-gray-100 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+    <div class="flex items-center justify-between">
+      <h3 class="font-semibold text-gray-800">{{ resource }}</h3>
+      <span class="text-sm text-gray-500">{{ endpoints | length }} endpoints</span>
+    </div>
+  </div>
+  <div class="divide-y divide-gray-50">
+    {% for ep in endpoints %}
+    <div class="px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50">
+      <span class="inline-block w-16 text-center text-xs font-bold rounded py-0.5
+        {% if ep.method == 'GET' %}bg-blue-100 text-blue-700
+        {% elif ep.method == 'POST' %}bg-green-100 text-green-700
+        {% elif ep.method == 'PATCH' %}bg-yellow-100 text-yellow-700
+        {% elif ep.method == 'PUT' %}bg-orange-100 text-orange-700
+        {% elif ep.method == 'DELETE' %}bg-red-100 text-red-700
+        {% endif %}">{{ ep.method }}</span>
+      <code class="text-sm text-gray-700 flex-1 font-mono">/api/v10{{ ep.path }}</code>
+      {% if ep.fixture %}
+      <span class="text-xs text-indigo-500" title="Has golden fixture">fixture</span>
+      {% endif %}
+      {% if ep.tests %}
+      <span class="text-xs text-green-600">{{ ep.tests | length }} tests</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

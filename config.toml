@@ -44,6 +44,11 @@ port = 9005
 db_path = "/data/slack.db"
 env_var = "MOCK_SLACK_URL"
 
+[mock-discord]
+port = 9006
+db_path = "/data/discord.db"
+env_var = "DISCORD_URL"
+
 [mock-stripe]
 port = 9007
 db_path = "/data/stripe.db"
