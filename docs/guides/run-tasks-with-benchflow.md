@@ -141,9 +141,9 @@ Probe the local subscription auth:
 CODEX_HOME="$(mktemp -d /tmp/codex-home.XXXXXX)"
 mkdir -p "$CODEX_HOME"
 cp "$HOME/.codex/auth.json" "$CODEX_HOME/auth.json"
-printf 'model = "gpt-5.5"\nmodel_reasoning_effort = "xhigh"\n' > "$CODEX_HOME/config.toml"
+printf 'model = "gpt-5.5"\nmodel_reasoning_effort = "xhigh"\n[features]\napps = false\n' > "$CODEX_HOME/config.toml"
 env -u OPENAI_API_KEY -u OPENAI_BASE_URL CODEX_HOME="$CODEX_HOME" \
-  codex exec -m gpt-5.5 "Reply exactly ok"
+  codex exec --disable apps -m gpt-5.5 "Reply exactly ok"
 ```
 
 Run the six-task environment coverage matrix:
@@ -151,7 +151,7 @@ Run the six-task environment coverage matrix:
 ```bash
 unset OPENAI_API_KEY OPENAI_BASE_URL
 export CODEX_AUTH_JSON="$(tr -d '\n' < "$HOME/.codex/auth.json")"
-export CODEX_CONFIG='{"model":"gpt-5.5","model_reasoning_effort":"xhigh"}'
+export CODEX_CONFIG='{"model":"gpt-5.5","model_reasoning_effort":"xhigh","features":{"apps":false}}'
 
 uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
   --tasks-dir tasks \
@@ -175,6 +175,9 @@ uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
 
 Do not pass `--reasoning-effort` to `codex-acp` on BenchFlow 0.6.4. Put Codex
 reasoning settings in `CODEX_CONFIG` as shown above.
+Keep Codex `apps` disabled for these runs. The task runtime should exercise only
+the local Docker mock services, not hosted app connectors attached to the
+operator's Codex account.
 
 The validated run for this revision started and scored all six environments
 with `errors=0` and `idle_timeouts=0`. Model pass rate is not the same as
