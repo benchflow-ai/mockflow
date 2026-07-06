@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use env0 in your research, please cite it as below."
+title: "env0: simulated-workspace environments for post-training LLM agents"
+abstract: "env0 provides high-fidelity mock services that replicate real Google Workspace and Slack APIs with full state management and deterministic snapshot/restore, enabling safe post-training and evaluation of LLM agents in realistic, stateful, multi-service productivity workflows. env0 inherits its mock environments from ClawsBench."
+type: software
+authors:
+  - name: "BenchFlow team"
+    website: "https://github.com/benchflow-ai/env0"
+repository-code: "https://github.com/benchflow-ai/env0"
+url: "https://github.com/benchflow-ai/env0"
+license: AGPL-3.0
+version: 0.1.0
+date-released: 2026-06-29
+keywords:
+  - llm-agents
+  - simulated-environments
+  - post-training
+  - agent-evaluation
+  - google-workspace
+  - slack
