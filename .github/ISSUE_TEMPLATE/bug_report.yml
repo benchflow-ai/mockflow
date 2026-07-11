@@ -25,7 +25,7 @@ body:
     id: version
     attributes:
       label: env0 version or commit
-      placeholder: "0.1.0 or git SHA"
+      placeholder: "0.2.0 or git SHA"
   - type: textarea
     id: validation
     attributes:

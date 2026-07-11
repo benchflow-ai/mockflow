@@ -1,5 +1,6 @@
-FROM ghcr.io/benchflow-ai/env0:0.1.0
+FROM ghcr.io/benchflow-ai/env0:0.2.0
 
+# Compatibility URLs used by the copied benchmark contract.
 ENV STRIPE_URL=http://localhost:9007
 
 COPY tasks/stripe-refund-correct-customer/data /tasks/stripe-refund-correct-customer/data
@@ -12,10 +13,11 @@ ENV TASKS_DIR=/tasks
 RUN mock-stripe --db /data/stripe.db seed --scenario task:stripe-refund-correct-customer
 
 # Create log dirs expected by the verifier/agent
+RUN chmod -R 700 /tasks
+
 RUN mkdir -p /logs/verifier /logs/agent /logs/artifacts
 
 # Grant agent write access to its log dirs (env source lives in env0)
 RUN chown agent:agent /logs/agent /logs/artifacts
 
-# NOTE: Daytona doesn't run CMD/ENTRYPOINT. mock-stripe is started by
-# BenchFlow from tasks/_manifests/env-0.toml.
+# BenchFlow starts mock-stripe from tasks/_manifests/env-0.toml.

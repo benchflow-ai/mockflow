@@ -27,3 +27,15 @@ this repo unless they expose an env0 runtime vulnerability.
 Do not commit OAuth tokens, API keys, real account exports, provider credential
 files, or private customer data. Fixture captures must be reviewed and sanitized
 before publication.
+
+## Synthetic Security Fixtures
+
+Some agent-safety tasks intentionally contain sensitive-looking values. These
+must be unmistakably synthetic, use reserved/example identities where possible,
+and authorize only localhost mock services.
+
+The fixed RSA key at
+`packages/environments/mock-auth/mock_auth/seed/keys/env-0-auth-key-001.pem`
+is an intentional deterministic fixture. It signs fake JWTs for fake localhost
+users and protects no external resource; the file carries the same warning in
+its header.

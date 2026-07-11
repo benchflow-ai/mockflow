@@ -11,6 +11,8 @@ Thumbs.db
 !.env.*.example
 client_secret*.json
 credentials*.json
+auth.json
+.credentials.json
 token*.json
 secrets/
 
@@ -52,4 +54,3 @@ node_modules/
 .turbo/
 .next/
 coverage/
-

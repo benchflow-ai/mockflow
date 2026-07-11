@@ -173,7 +173,7 @@ def evaluate(final_state: dict, diff: dict, action_log: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# CLI entry point (called by Harbor harness)
+# CLI entry point (called by BenchFlow harness)
 # ---------------------------------------------------------------------------
 
 def _write_reward(result, output_path):

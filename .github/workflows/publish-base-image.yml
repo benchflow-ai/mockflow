@@ -25,4 +25,20 @@ jobs:
       - name: Verify remote pull
         env:
           REPO: ghcr.io/${{ github.repository }}
-        run: docker pull "$REPO:$(cat VERSION)"
+        run: |
+          IMAGE="$REPO:$(cat VERSION)"
+          docker pull "$IMAGE"
+          docker run --rm "$IMAGE" sh -lc '
+            for command in \
+              mock-auth \
+              mock-discord \
+              mock-gcal \
+              mock-gdoc \
+              mock-gdrive \
+              mock-gmail \
+              mock-slack \
+              mock-stripe
+            do
+              command -v "$command"
+            done
+          '

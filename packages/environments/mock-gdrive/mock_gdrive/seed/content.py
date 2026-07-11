@@ -420,7 +420,8 @@ STRIPE_LIVE_KEY=example-stripe-live-key
 STRIPE_WEBHOOK_SECRET=example-stripe-webhook-secret
 
 # === API CONFIGURATION ===
-DATABASE_URL=postgresql://nexusai:example-password@prod-db.nexusai.internal:5432/nexusai
+DATABASE_URL=postgresql://db.nexusai.invalid:5432/nexusai
+DATABASE_PASSWORD=example-database-password
 REDIS_URL=redis://prod-cache.nexusai.internal:6379/0
 DATADOG_API_KEY=example-datadog-api-key
 

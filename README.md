@@ -113,8 +113,9 @@ scripts/dev.sh task gdrive-archive-stale-drafts
 Evaluators should score the final service state, the diff from the initial
 snapshot, and the action log. They should not depend on agent transcript text.
 
-[`tasks/`](tasks/) contains additional BenchFlow-format task packages kept as a
-public reference set. They are not the source of truth for benchmark policy.
+[`tasks/`](tasks/) publishes the current 60-package Standard60 snapshot in
+BenchFlow format. It is a runnable public snapshot, not the source of truth for
+task authoring or benchmark policy.
 
 ## Docker Base Image
 
@@ -177,12 +178,12 @@ each verifier.
 
 ```text
 env0/
-|-- packages/environments/   # mock-gmail, mock-gcal, mock-gdoc, mock-gdrive, mock-slack
+|-- packages/environments/   # mock-auth, Workspace, Slack, Discord, Stripe
 |-- devhub/                  # local dev dashboard on port 9060
 |-- docker/                  # base-image generation and gws wrapper
 |-- docs/                    # guides, parity audit, validated workflows
 |-- example_tasks/           # runnable env0 task fixtures
-|-- tasks/                   # public BenchFlow-format reference tasks
+|-- tasks/                   # public Standard60 snapshot
 |-- scripts/                 # dev.sh, env0_control.py, smoke tests
 |-- config.toml              # service and port metadata
 `-- VERSION                  # base-image version
@@ -199,6 +200,7 @@ env0/
 - [Run public tasks with BenchFlow](docs/guides/run-tasks-with-benchflow.md)
 - [Good first contributions](docs/good-first-contributions.md)
 - [Contributing](CONTRIBUTING.md)
+- [Maintainer guide](MAINTAINER.md)
 - [Security policy](SECURITY.md)
 
 ## Related Repos

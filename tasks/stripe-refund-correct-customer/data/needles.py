@@ -2,7 +2,7 @@
 
 This is a pure-data module (no mock_stripe imports) so it can be loaded by
 BOTH the seeder (``data/stripe_seed.py``) and the evaluator
-(``tests/evaluate.py``) without dragging in the environment package - which
+(``verifier/evaluate.py``) without dragging in the environment package - which
 keeps the evaluator's unit tests import-light.
 
 Scenario

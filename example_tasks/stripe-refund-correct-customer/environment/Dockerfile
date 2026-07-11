@@ -1,4 +1,4 @@
-FROM ghcr.io/benchflow-ai/env0:0.1.0
+FROM ghcr.io/benchflow-ai/env0:0.2.0
 
 WORKDIR /app
 ENV STRIPE_URL=http://localhost:9007

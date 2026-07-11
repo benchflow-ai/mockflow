@@ -4,7 +4,7 @@ This guide is the self-contained path for a new contributor to clone `env0`,
 build the public mock environment image, and run real task packages end to end
 with BenchFlow.
 
-Validated on 2026-07-04 with:
+Validated on 2026-07-10 with:
 
 - `benchflow==0.6.4`
 - Docker Desktop 29.3.0
@@ -52,7 +52,7 @@ docker/build-base.sh
 This builds:
 
 ```text
-ghcr.io/benchflow-ai/env0:0.1.0
+ghcr.io/benchflow-ai/env0:0.2.0
 ghcr.io/benchflow-ai/env0:latest
 ```
 
@@ -61,32 +61,43 @@ fresh contributor should be able to build locally with the command above.
 
 ## 3. Check Task Packages
 
-This six-task matrix covers every public mock service at least once:
+Standard60 covers auth, Gmail, Calendar, Drive, Docs, Slack, and Stripe.
+Discord is an env0 runtime fixture but is not part of the 60-task benchmark
+snapshot.
 
-| Task | Services covered |
+| Package | Services covered |
 |---|---|
-| `auth-least-privilege-summary` | `mock-auth`, `mock-gmail` |
-| `discord-incident-followup` | `mock-discord` |
-| `gcal-federal-register-meeting-amendments` | `mock-gcal` |
-| `gdoc-search-keyword-index` | `mock-gdrive`, `mock-gdoc` |
-| `slack-search-channel-history` | `mock-slack` |
-| `stripe-refund-correct-customer` | `mock-stripe` |
+| `tasks/auth-least-privilege-summary` | `mock-auth`, `mock-gmail` |
+| `tasks/gcal-federal-register-meeting-amendments` | `mock-gcal` |
+| `tasks/gdoc-search-keyword-index` | `mock-gdrive`, `mock-gdoc` |
+| `tasks/slack-search-channel-history` | `mock-slack` |
+| `tasks/stripe-refund-correct-customer` | `mock-stripe` |
+| `example_tasks/discord-incident-followup` | `mock-discord` |
 
-Run structural and runtime-capability checks:
+Run structural checks for all 60 benchmark packages:
 
 ```bash
-for task in \
-  auth-least-privilege-summary \
-  discord-incident-followup \
-  gcal-federal-register-meeting-amendments \
-  gdoc-search-keyword-index \
-  slack-search-channel-history \
-  stripe-refund-correct-customer
-do
+python3 -m unittest tests/test_standard60_tasks.py
+
+while IFS= read -r task; do
   uvx --from "benchflow==${BENCHFLOW_VERSION}" bench tasks check \
     "tasks/${task}" --level structural
+done < tasks/STANDARD60_MANIFEST.txt
+```
+
+Run runtime-capability checks across every public mock service:
+
+```bash
+for task_dir in \
+  tasks/auth-least-privilege-summary \
+  tasks/gcal-federal-register-meeting-amendments \
+  tasks/gdoc-search-keyword-index \
+  tasks/slack-search-channel-history \
+  tasks/stripe-refund-correct-customer \
+  example_tasks/discord-incident-followup
+do
   uvx --from "benchflow==${BENCHFLOW_VERSION}" bench tasks check \
-    "tasks/${task}" --level runtime-capability --sandbox docker
+    "${task_dir}" --level runtime-capability --sandbox docker
 done
 ```
 
@@ -99,19 +110,6 @@ export BENCHFLOW_REWARD_LENIENT=1
 
 uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
   --tasks-dir tasks \
-  --include auth-least-privilege-summary \
-  --include discord-incident-followup \
-  --include email-confidential-forward \
-  --include email-no-wrong-recipients \
-  --include email-vendor-report-organize \
-  --include gcal-federal-register-meeting-amendments \
-  --include gdoc-search-keyword-index \
-  --include gdrive-sensitive-file-lockdown \
-  --include multi-doc-slack-spec-drift \
-  --include multi-mail-cal-sync \
-  --include slack-channel-reorg \
-  --include slack-search-channel-history \
-  --include stripe-refund-correct-customer \
   --agent oracle \
   --sandbox docker \
   --context-root . \
@@ -123,7 +121,7 @@ uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
 Expected result for this revision:
 
 ```text
-Job complete: 13/13 (100.0%), errors=0, idle_timeouts=0
+Job complete: 60/60 (100.0%), errors=0, idle_timeouts=0
 ```
 
 ## 5. Run With Codex Subscription Auth
@@ -146,7 +144,7 @@ env -u OPENAI_API_KEY -u OPENAI_BASE_URL CODEX_HOME="$CODEX_HOME" \
   codex exec --disable apps -m gpt-5.5 "Reply exactly ok"
 ```
 
-Run the six-task environment coverage matrix:
+Run a five-task Standard60 environment coverage matrix:
 
 ```bash
 unset OPENAI_API_KEY OPENAI_BASE_URL
@@ -156,7 +154,6 @@ export CODEX_CONFIG='{"model":"gpt-5.5","model_reasoning_effort":"xhigh","featur
 uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
   --tasks-dir tasks \
   --include auth-least-privilege-summary \
-  --include discord-incident-followup \
   --include gcal-federal-register-meeting-amendments \
   --include gdoc-search-keyword-index \
   --include slack-search-channel-history \
@@ -179,10 +176,9 @@ Keep Codex `apps` disabled for these runs. The task runtime should exercise only
 the local Docker mock services, not hosted app connectors attached to the
 operator's Codex account.
 
-The validated run for this revision started and scored all six environments
-with `errors=0` and `idle_timeouts=0`. Model pass rate is not the same as
-environment health: the validated Codex run passed 3/6 tasks, failed 2/6 by
-verifier score, and hit the task wall-clock timeout on 1/6.
+Model pass rate is not the same as environment health. Use the oracle baseline
+as the release gate; this smaller model run is an optional agent-integration
+smoke.
 
 ## 6. Claude Code Status
 
@@ -212,7 +208,7 @@ Then run a one-task probe:
 
 ```bash
 uvx --from "benchflow==${BENCHFLOW_VERSION}" bench eval run \
-  --tasks-dir tasks \
+  --tasks-dir example_tasks \
   --include discord-incident-followup \
   --agent claude-agent-acp \
   --model opus \
