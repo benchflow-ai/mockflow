@@ -20,7 +20,7 @@
 
 [environment]
 name           = "env0"
-base_image     = "ghcr.io/benchflow-ai/env0:0.1.0"
+base_image     = "ghcr.io/benchflow-ai/env0:0.2.0"
 owns_lifecycle = false        # images have no service entrypoint; the framework starts [[services]]
 isolation      = "per_task"
 

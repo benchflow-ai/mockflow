@@ -38,7 +38,7 @@ def _load_needles():
 
 
 def _get_needles():
-    """Lazy-load needles (deferred to avoid import errors when env_0_gdrive is absent)."""
+    """Lazy-load needles (deferred to avoid import errors when mock_gdrive is absent)."""
     if not hasattr(_get_needles, "_cache"):
         _get_needles._cache = _load_needles()
     return _get_needles._cache

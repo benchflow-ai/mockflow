@@ -23,7 +23,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 def _load_scenarios():
-    # In container: Harbor uploads verifier/ to /verifier/, so __file__ is
+    # In container: BenchFlow uploads verifier/ to /verifier/, so __file__ is
     # /verifier/evaluate.py — parent.parent / "data" would be /data/ (wrong).
     # Use TASKS_DIR env var (set in Dockerfile) to find the task data dir.
     tasks_dir = os.environ.get("TASKS_DIR")

@@ -1,11 +1,13 @@
 {
-  "team": "mockslack",
-  "team_id": "T0AN6SZBR3J",
-  "bot_user": "demo_app",
-  "bot_user_id": "U0AMGBHA936",
+  "_captured_at": "2026-03-27T20:39:50.925737+00:00",
   "api_base": "https://slack.com/api",
   "auth_method": "bot token (xoxb) + user token (xoxp) for search",
+  "bot_user": "demo_app",
+  "bot_user_id": "U0AMGBHA936",
   "capture_script": "scripts/capture_fixtures.py",
   "note": "Test workspace. User token used for search.messages only.",
-  "_captured_at": "2026-03-27T20:39:50.925737+00:00"
+  "sanitization_note": "All captured user email addresses are replaced with deterministic example.test identities.",
+  "sanitized": true,
+  "team": "mockslack",
+  "team_id": "T0AN6SZBR3J"
 }

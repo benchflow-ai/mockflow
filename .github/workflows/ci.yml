@@ -18,6 +18,11 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Run repo smoke
         run: scripts/smoke_dev.sh
+      - name: Check Standard60 task snapshot
+        run: |
+          python3 -m unittest \
+            tests/test_standard60_tasks.py \
+            tests/test_public_data_hygiene.py
 
   conformance:
     name: Conformance (${{ matrix.package }})
@@ -60,12 +65,46 @@ jobs:
   docker-smoke:
     name: Docker base and examples
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
       - name: Build base image
         run: docker/build-base.sh
       - name: Smoke example task images
         run: PULL_BASE=0 scripts/smoke_docker_examples.sh
+      - name: Run one task per Standard60 mock environment
+        env:
+          BENCHFLOW_REWARD_LENIENT: "1"
+        run: |
+          uvx --from "benchflow==0.6.4" bench eval run \
+            --tasks-dir tasks \
+            --include auth-least-privilege-summary \
+            --include email-confidential-forward \
+            --include gcal-federal-register-meeting-amendments \
+            --include gdrive-sensitive-file-lockdown \
+            --include gdoc-search-keyword-index \
+            --include multi-mail-slack-invite \
+            --include stripe-refund-correct-customer \
+            --agent oracle \
+            --sandbox docker \
+            --context-root . \
+            --concurrency 2 \
+            --build-concurrency 2 \
+            --jobs-dir .local/ci-standard60-representatives
+      - name: Run the Discord example task
+        env:
+          BENCHFLOW_REWARD_LENIENT: "1"
+        run: |
+          uvx --from "benchflow==0.6.4" bench eval run \
+            --tasks-dir example_tasks \
+            --include discord-incident-followup \
+            --agent oracle \
+            --sandbox docker \
+            --context-root . \
+            --concurrency 1 \
+            --build-concurrency 1 \
+            --jobs-dir .local/ci-discord-representative

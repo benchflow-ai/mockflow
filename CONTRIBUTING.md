@@ -4,10 +4,11 @@ env0 is the first-party mock-environment runtime for agent testing. It owns
 high-fidelity mock services, deterministic seed data, local tooling,
 API-parity fixtures, devhub, and the shared Docker base image.
 
-The current v0.1 runtime ships five high-fidelity mock services:
-`mock-gmail`, `mock-gcal`, `mock-gdrive`, `mock-gdoc`, and `mock-slack`.
-They replicate Google Workspace and Slack API surfaces with state management
-and deterministic snapshot/restore.
+The current v0.2 runtime ships eight mock services: `mock-auth`, `mock-gmail`,
+`mock-gcal`, `mock-gdrive`, `mock-gdoc`, `mock-slack`, `mock-discord`, and
+`mock-stripe`. They provide state management and deterministic
+snapshot/restore across identity, Google Workspace, Slack, Discord, and Stripe
+surfaces.
 
 There are two ways to contribute:
 
@@ -27,9 +28,9 @@ env runtime validation and copied-reference workflows:
 - [`example_tasks/`](https://github.com/benchflow-ai/env0/tree/main/example_tasks)
   contains small runtime fixtures/templates for env0 service and launcher
   testing.
-- [`tasks/`](https://github.com/benchflow-ai/env0/tree/main/tasks) contains a
-  small copied [BenchFlow](https://github.com/benchflow-ai/benchflow)-native
-  reference set.
+- [`tasks/`](https://github.com/benchflow-ai/env0/tree/main/tasks) publishes
+  the current 60-package Standard60 snapshot in
+  [BenchFlow](https://github.com/benchflow-ai/benchflow)-native format.
 
 ## What To Contribute
 
@@ -138,6 +139,8 @@ PR:
 - Do not copy environment source code into thin task images.
 - Do not commit credentials, OAuth tokens, live account exports, or private
   customer data — and do not paste them into Discord.
+- Keep demo credentials and sensitive-looking benchmark values clearly
+  synthetic and scoped to localhost mock services.
 - Do not commit BenchChat handoff bundles, `.env` files, generated credential
   exports, or API-key screenshots.
 
@@ -203,20 +206,18 @@ PULL_BASE=0 scripts/smoke_docker_examples.sh
 Copied BenchFlow task packages under `tasks/`:
 
 ```bash
-for task in tasks/*; do
-  [ -d "$task" ] || continue
-  [ "$(basename "$task")" = "_manifests" ] && continue
-  bench tasks check "$task" --level structural
-done
+python3 -m unittest tests/test_standard60_tasks.py
+
+while IFS= read -r task; do
+  bench tasks check "tasks/${task}" --level structural
+done < tasks/STANDARD60_MANIFEST.txt
 ```
 
 These checks require the BenchFlow CLI and validate copied task packages
 structurally only.
 
-End-to-end evaluation of copied downstream task packages may also require the
-upstream `ghcr.io/benchflow-ai/env-0-base:latest` image because those packages
-preserve their source-runner contract. New env0 example-task Dockerfiles should
-instead use `ghcr.io/benchflow-ai/env0:<VERSION>`.
+End-to-end evaluation uses the public
+`ghcr.io/benchflow-ai/env0:<VERSION>` image pinned by each task package.
 
 ### Pull request checklist
 

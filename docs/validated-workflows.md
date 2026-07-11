@@ -40,19 +40,6 @@ The all-task oracle baseline for the current public task set is:
 ```bash
 BENCHFLOW_REWARD_LENIENT=1 bench eval run \
   --tasks-dir tasks \
-  --include auth-least-privilege-summary \
-  --include discord-incident-followup \
-  --include email-confidential-forward \
-  --include email-no-wrong-recipients \
-  --include email-vendor-report-organize \
-  --include gcal-federal-register-meeting-amendments \
-  --include gdoc-search-keyword-index \
-  --include gdrive-sensitive-file-lockdown \
-  --include multi-doc-slack-spec-drift \
-  --include multi-mail-cal-sync \
-  --include slack-channel-reorg \
-  --include slack-search-channel-history \
-  --include stripe-refund-correct-customer \
   --agent oracle \
   --sandbox docker \
   --context-root . \
@@ -61,7 +48,7 @@ BENCHFLOW_REWARD_LENIENT=1 bench eval run \
   --jobs-dir .local/bf-oracle-all-public
 ```
 
-That command should complete with `13/13`, `errors=0`, and `idle_timeouts=0`.
+That command should complete with `60/60`, `errors=0`, and `idle_timeouts=0`.
 
 Maintainers can publish the release image with the `Publish Base Image` GitHub
 Actions workflow. The workflow uses the repository `GITHUB_TOKEN` with
@@ -82,11 +69,11 @@ Use these when changing mock-gdrive API behavior. Substitute another
 ## Imported BenchFlow Tasks
 
 ```bash
-for task in tasks/*; do
-  [ -d "$task" ] || continue
-  [ "$(basename "$task")" = "_manifests" ] && continue
-  bench tasks check "$task" --level structural
-done
+python3 -m unittest tests/test_standard60_tasks.py
+
+while IFS= read -r task; do
+  bench tasks check "tasks/${task}" --level structural
+done < tasks/STANDARD60_MANIFEST.txt
 ```
 
 This validates copied BenchFlow task packages structurally. Running them

@@ -23,13 +23,15 @@ validation.
   self-contained setup and subscription-agent task runs for public tasks.
 - [Contributing](../CONTRIBUTING.md) — repo boundaries, validation matrix, and
   pull request expectations.
+- [Maintainer guide](../MAINTAINER.md) — Standard60 sync, image publication,
+  versioning, and GitHub release workflow.
 - [Security policy](../SECURITY.md) — private vulnerability reporting and
   credential hygiene.
 
 ## Boundaries
 
 - `example_tasks/` are env0 runtime fixtures.
-- `tasks/` contains copied BenchFlow task packages for reference and downstream
-  evaluation.
+- `tasks/` publishes the current 60-package Standard60 snapshot for public
+  downstream evaluation.
 - Canonical benchmark task authoring and scoring semantics live outside this
   repo.
