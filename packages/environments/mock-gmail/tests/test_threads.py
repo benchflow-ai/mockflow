@@ -234,3 +234,77 @@ class TestThreadsListBehavior:
         assert default_response.json()["resultSizeEstimate"] == 1
         assert set(_listed_thread_ids(included_response)) == set(scenarios)
         assert included_response.json()["resultSizeEstimate"] == 3
+
+    def test_latest_message_order_and_pagination_are_stable(self, client, db_session):
+        user_id = _user_id(db_session)
+        marker = "thread-page-order-7c981"
+        # Insert in deliberately different order from the API contract.
+        thread_dates = [
+            ("thread-order-oldest", _at(5, 1)),
+            ("thread-order-tie-z", _at(5, 3)),
+            ("thread-order-newest", _at(5, 5)),
+            ("thread-order-tie-a", _at(5, 3)),
+            ("thread-order-second", _at(5, 4)),
+        ]
+        for thread_id, internal_date in thread_dates:
+            messages = []
+            latest_body = marker
+            if thread_id == "thread-order-newest":
+                messages.append(
+                    _message_spec(f"{thread_id}-older-message", _at(4, 30), marker)
+                )
+                latest_body = "The latest message does not match the list query."
+            messages.append(
+                _message_spec(
+                    f"{thread_id}-latest-message", internal_date, latest_body
+                )
+            )
+            _add_thread(
+                db_session,
+                user_id,
+                thread_id,
+                messages,
+            )
+
+        expected = [
+            "thread-order-newest",
+            "thread-order-second",
+            "thread-order-tie-a",
+            "thread-order-tie-z",
+            "thread-order-oldest",
+        ]
+
+        full_response = client.get(
+            "/gmail/v1/users/me/threads",
+            params={"q": marker, "maxResults": 500},
+        )
+        assert _listed_thread_ids(full_response) == expected
+        assert full_response.json()["resultSizeEstimate"] == len(expected)
+
+        def walk_pages() -> tuple[list[str], list[str]]:
+            collected = []
+            seen_tokens = set()
+            tokens = []
+            page_token = None
+            for _ in range(len(expected)):
+                params = {"q": marker, "maxResults": 2}
+                if page_token is not None:
+                    params["pageToken"] = page_token
+                response = client.get("/gmail/v1/users/me/threads", params=params)
+                data = response.json()
+                assert data["resultSizeEstimate"] == len(expected)
+                collected.extend(_listed_thread_ids(response))
+                page_token = data.get("nextPageToken")
+                if page_token is None:
+                    return collected, tokens
+                assert page_token not in seen_tokens
+                seen_tokens.add(page_token)
+                tokens.append(page_token)
+            pytest.fail("Pagination did not terminate")
+
+        first_walk, first_tokens = walk_pages()
+        second_walk, second_tokens = walk_pages()
+        assert first_walk == expected
+        assert second_walk == expected
+        assert first_tokens == second_tokens
+        assert len(first_walk) == len(set(first_walk))

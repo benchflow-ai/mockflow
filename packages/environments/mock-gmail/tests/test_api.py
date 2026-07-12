@@ -417,7 +417,8 @@ class TestThreadsMutations:
             assert "TRASH" not in msg["labelIds"]
 
     def test_delete_thread(self, client):
-        resp = client.get("/gmail/v1/users/me/threads")
+        # Pick a mailbox thread; deterministic date ordering puts the draft first.
+        resp = client.get("/gmail/v1/users/me/threads?labelIds=INBOX")
         thread_id = resp.json()["threads"][0]["id"]
 
         resp = client.delete(f"/gmail/v1/users/me/threads/{thread_id}")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from mock_gmail.models import Thread, Message, MessageLabel
@@ -34,7 +35,20 @@ def list_threads(
     db: Session = Depends(get_db),
     _user_id: str = Depends(resolve_user_id),
 ):
-    query = db.query(Thread).filter(Thread.user_id == _user_id)
+    latest_message = (
+        db.query(
+            Message.thread_id.label("thread_id"),
+            func.max(Message.internal_date).label("internal_date"),
+        )
+        .filter(Message.user_id == _user_id)
+        .group_by(Message.thread_id)
+        .subquery()
+    )
+    query = (
+        db.query(Thread)
+        .join(latest_message, latest_message.c.thread_id == Thread.id)
+        .filter(Thread.user_id == _user_id)
+    )
 
     if labelIds:
         # Normalize: handle both repeated params and comma-separated
@@ -86,7 +100,15 @@ def list_threads(
             pass
 
     total = query.count()
-    threads = query.offset(offset).limit(maxResults).all()
+    threads = (
+        query.order_by(
+            latest_message.c.internal_date.desc(),
+            Thread.id.asc(),
+        )
+        .offset(offset)
+        .limit(maxResults)
+        .all()
+    )
 
     next_token = None
     if offset + maxResults < total:
