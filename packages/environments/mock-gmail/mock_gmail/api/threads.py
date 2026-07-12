@@ -146,6 +146,9 @@ def get_thread(
         .order_by(Message.internal_date.asc(), Message.id.asc())
         .all()
     )
+    if not msgs:
+        # Empty Thread rows are orphaned mock state, not public Gmail resources.
+        raise HTTPException(404, f"Thread {threadId!r} not found")
 
     # Real Gmail threads.get returns {id, historyId, messages} — no snippet (Bug 2)
     return {

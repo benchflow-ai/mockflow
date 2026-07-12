@@ -390,3 +390,19 @@ class TestThreadsGetBehavior:
                 params={"format": unsupported_format},
             )
             assert response.status_code == 400
+
+    def test_not_found_and_empty_thread_return_not_found(self, client, db_session):
+        missing = client.get("/gmail/v1/users/me/threads/7fffffffffffffff")
+        assert missing.status_code == 404
+
+        user_id = _user_id(db_session)
+        _add_thread(db_session, user_id, "thread-empty", [])
+
+        empty = client.get("/gmail/v1/users/me/threads/thread-empty")
+        assert empty.status_code == 404
+
+        listed = client.get(
+            "/gmail/v1/users/me/threads",
+            params={"includeSpamTrash": "true", "maxResults": 500},
+        )
+        assert "thread-empty" not in _listed_thread_ids(listed)
