@@ -308,3 +308,29 @@ class TestThreadsListBehavior:
         assert second_walk == expected
         assert first_tokens == second_tokens
         assert len(first_walk) == len(set(first_walk))
+
+
+class TestThreadsGetBehavior:
+    def test_messages_are_ordered_by_date_then_id(self, client, db_session):
+        user_id = _user_id(db_session)
+        _add_thread(
+            db_session,
+            user_id,
+            "thread-get-order",
+            [
+                _message_spec("message-get-newest", _at(6, 3), "newest"),
+                _message_spec("message-get-tie-z", _at(6, 2), "tie z"),
+                _message_spec("message-get-oldest", _at(6, 1), "oldest"),
+                _message_spec("message-get-tie-a", _at(6, 2), "tie a"),
+            ],
+        )
+
+        response = client.get("/gmail/v1/users/me/threads/thread-get-order")
+
+        assert response.status_code == 200
+        assert [message["id"] for message in response.json()["messages"]] == [
+            "message-get-oldest",
+            "message-get-tie-a",
+            "message-get-tie-z",
+            "message-get-newest",
+        ]

@@ -141,7 +141,7 @@ def get_thread(
     msgs = (
         db.query(Message)
         .filter(Message.thread_id == threadId, Message.user_id == _user_id)
-        .order_by(Message.internal_date.asc())
+        .order_by(Message.internal_date.asc(), Message.id.asc())
         .all()
     )
 
