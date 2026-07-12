@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -130,7 +132,7 @@ def list_threads(
 def get_thread(
     userId: str,
     threadId: str,
-    format: str = Query("full"),
+    format: Literal["full", "metadata", "minimal"] = Query("full"),
     db: Session = Depends(get_db),
     _user_id: str = Depends(resolve_user_id),
 ):

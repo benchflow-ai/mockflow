@@ -334,3 +334,59 @@ class TestThreadsGetBehavior:
             "message-get-tie-z",
             "message-get-newest",
         ]
+
+    def test_supported_formats_shape_every_message(self, client, db_session):
+        user_id = _user_id(db_session)
+        _add_thread(
+            db_session,
+            user_id,
+            "thread-get-formats",
+            [
+                _message_spec("message-format-a", _at(7, 1), "alpha"),
+                _message_spec("message-format-b", _at(7, 2), "beta"),
+            ],
+        )
+
+        default = client.get("/gmail/v1/users/me/threads/thread-get-formats").json()
+        full = client.get(
+            "/gmail/v1/users/me/threads/thread-get-formats",
+            params={"format": "full"},
+        ).json()
+        metadata = client.get(
+            "/gmail/v1/users/me/threads/thread-get-formats",
+            params={"format": "metadata"},
+        ).json()
+        minimal = client.get(
+            "/gmail/v1/users/me/threads/thread-get-formats",
+            params={"format": "minimal"},
+        ).json()
+
+        assert default == full
+        assert set(full) == {"id", "historyId", "messages"}
+        assert set(metadata) == set(full)
+        assert set(minimal) == set(full)
+        for message in full["messages"]:
+            assert "payload" in message
+            assert "raw" not in message
+        for message in metadata["messages"]:
+            assert set(message["payload"]) == {"mimeType", "headers"}
+            assert "raw" not in message
+        for message in minimal["messages"]:
+            assert set(message) == {
+                "id",
+                "threadId",
+                "labelIds",
+                "snippet",
+                "historyId",
+                "internalDate",
+                "sizeEstimate",
+            }
+            assert "payload" not in message
+            assert "raw" not in message
+
+        for unsupported_format in ("raw", "unsupported"):
+            response = client.get(
+                "/gmail/v1/users/me/threads/thread-get-formats",
+                params={"format": unsupported_format},
+            )
+            assert response.status_code == 400
