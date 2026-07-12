@@ -93,6 +93,7 @@ uv run --extra dev pytest tests -q
 |-------|----------------|
 | `test_api.py` | Full CRUD for messages, threads, labels, drafts, admin, and task surfaces |
 | `test_conformance.py` | Response-shape validation against real Gmail fixtures |
+| `test_threads.py` | Thread list/get filtering, ordering, pagination, formats, and orphan handling |
 | `test_settings.py` | Settings sub-resources: filters, sendAs, forwarding, delegates, vacation, IMAP, POP, language |
 | `test_mime.py` | RFC 2822 build/parse, base64url encoding, message-ID generation |
 | `test_snapshots.py` | Snapshot/reset behavior |
