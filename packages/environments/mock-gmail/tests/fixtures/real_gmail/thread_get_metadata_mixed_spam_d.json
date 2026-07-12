@@ -1,0 +1,30 @@
+{
+  "id": "19f56a773c7f5c52",
+  "historyId": "10915",
+  "messages": [
+    {
+      "id": "19f56a7a3046d75a",
+      "threadId": "19f56a773c7f5c52",
+      "labelIds": [
+        "UNREAD",
+        "IMPORTANT",
+        "SENT",
+        "INBOX"
+      ],
+      "snippet": "visible message D1",
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          {
+            "name": "Subject",
+            "value": "[env0-fixture] mixed-spam-D"
+          }
+        ]
+      },
+      "sizeEstimate": 594,
+      "historyId": "10915",
+      "internalDate": "1783865254000"
+    }
+  ],
+  "_captured_at": "2026-07-12T14:16:54.240014+00:00"
+}

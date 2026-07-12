@@ -241,27 +241,31 @@ class TestThreadsListBehavior:
         ]
         assert included_response.json()["resultSizeEstimate"] == 3
 
-    def test_newer_trashed_message_does_not_change_thread_order(
-        self, client, db_session
+    @pytest.mark.parametrize("hidden_label", ["TRASH", "SPAM"])
+    def test_newer_hidden_message_does_not_change_thread_order(
+        self, client, db_session, hidden_label
     ):
         user_id = _user_id(db_session)
-        subject_prefix = "Mixed hidden ordering 6e4b2"
+        hidden_kind = hidden_label.lower()
+        subject_prefix = f"Mixed {hidden_kind} ordering 6e4b2"
+        thread_a = f"thread-mixed-{hidden_kind}-a"
+        thread_b = f"thread-mixed-{hidden_kind}-b"
         _add_thread(
             db_session,
             user_id,
-            "thread-mixed-trash-a",
+            thread_a,
             [
                 _message_spec(
-                    "message-mixed-trash-a-visible",
+                    f"message-mixed-{hidden_kind}-a-visible",
                     _at(5, 1),
                     "visible message A1",
                     ["INBOX"],
                 ),
                 _message_spec(
-                    "message-mixed-trash-a-hidden",
+                    f"message-mixed-{hidden_kind}-a-hidden",
                     _at(5, 3),
                     "hidden message A2",
-                    ["TRASH"],
+                    [hidden_label],
                 ),
             ],
             subject=f"{subject_prefix}-A",
@@ -269,10 +273,10 @@ class TestThreadsListBehavior:
         _add_thread(
             db_session,
             user_id,
-            "thread-mixed-trash-b",
+            thread_b,
             [
                 _message_spec(
-                    "message-mixed-trash-b-visible",
+                    f"message-mixed-{hidden_kind}-b-visible",
                     _at(5, 2),
                     "visible message B1",
                     ["INBOX"],
@@ -281,7 +285,7 @@ class TestThreadsListBehavior:
             subject=f"{subject_prefix}-B",
         )
 
-        expected = ["thread-mixed-trash-b", "thread-mixed-trash-a"]
+        expected = [thread_b, thread_a]
         for include_spam_trash in (False, True):
             response = client.get(
                 "/gmail/v1/users/me/threads",

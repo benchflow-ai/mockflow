@@ -660,6 +660,29 @@ class TestThreadsConformance:
         assert default["resultSizeEstimate"] == 2
         assert included["resultSizeEstimate"] == 2
 
+    def test_threads_list_mixed_spam_order_fixture(self):
+        """Provider capture orders a mixed Spam thread by its visible message."""
+        default = load_fixture("threads_list_mixed_spam_default.json")
+        included = load_fixture("threads_list_mixed_spam_included.json")
+        thread_c = load_fixture("thread_get_metadata_mixed_spam_c.json")
+        thread_d = load_fixture("thread_get_metadata_mixed_spam_d.json")
+
+        assert len(thread_c["messages"]) == 2
+        assert len(thread_d["messages"]) == 1
+        c_visible, c_spam = thread_c["messages"]
+        (d_visible,) = thread_d["messages"]
+        assert int(c_visible["internalDate"]) < int(d_visible["internalDate"])
+        assert int(d_visible["internalDate"]) < int(c_spam["internalDate"])
+        assert "SPAM" not in c_visible["labelIds"]
+        assert "SPAM" not in d_visible["labelIds"]
+        assert "SPAM" in c_spam["labelIds"]
+
+        expected_order = [thread_d["id"], thread_c["id"]]
+        assert [thread["id"] for thread in default["threads"]] == expected_order
+        assert [thread["id"] for thread in included["threads"]] == expected_order
+        assert default["resultSizeEstimate"] == 2
+        assert included["resultSizeEstimate"] == 2
+
 
 class TestSettingsConformance:
     def test_filters_list_empty_returns_empty_object(self, client):

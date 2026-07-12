@@ -1,0 +1,16 @@
+{
+  "threads": [
+    {
+      "id": "19f56a773c7f5c52",
+      "snippet": "<b>visible</b> <b>message</b> <b>D1</b>",
+      "historyId": "10915"
+    },
+    {
+      "id": "19f56a705ee6e94d",
+      "snippet": "<b>visible</b> <b>message</b> <b>C1</b>",
+      "historyId": "11270"
+    }
+  ],
+  "resultSizeEstimate": 2,
+  "_captured_at": "2026-07-12T14:16:53.700176+00:00"
+}

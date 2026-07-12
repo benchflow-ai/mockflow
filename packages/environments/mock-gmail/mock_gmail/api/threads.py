@@ -46,9 +46,9 @@ def list_threads(
             else_=None,
         )
     )
-    # A provider capture shows that a mixed Trash thread stays anchored to its
-    # latest visible message with includeSpamTrash either false or true. Fully
-    # hidden threads use their latest member as a deterministic fallback.
+    # Provider captures show that mixed Trash and Spam threads stay anchored to
+    # their latest visible message with includeSpamTrash either false or true.
+    # Fully hidden threads use their latest member as a deterministic fallback.
     thread_sort_date = func.coalesce(
         latest_visible_message_date,
         func.max(Message.internal_date),
