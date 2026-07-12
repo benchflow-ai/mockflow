@@ -71,6 +71,14 @@ def _assert_any_shape(real_items: list, mock_item, path: str, strict: bool) -> N
     pytest.fail(f"Mock item at {path} matches no fixture item shape: {'; '.join(errors)}")
 
 
+def _assert_thread_message_core_types(message: dict) -> None:
+    for key in ("id", "threadId", "snippet", "historyId", "internalDate"):
+        assert isinstance(message[key], str)
+    assert isinstance(message["labelIds"], list)
+    assert all(isinstance(label_id, str) for label_id in message["labelIds"])
+    assert isinstance(message["sizeEstimate"], int)
+
+
 class TestProfileConformance:
     def test_profile_keys(self, client):
         """Profile response has same keys as real Gmail."""
@@ -525,20 +533,30 @@ class TestThreadsConformance:
             pytest.skip("No threads")
         thread_id = threads[0]["id"]
 
-        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}")
+        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}?format=full")
         mock = resp.json()
 
         # Real threads.get returns {id, historyId, messages} — no snippet
         real = load_fixture("thread_get_full.json")
         assert set(mock.keys()) == set(real.keys())
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
         assert "messages" in mock
         assert len(mock["messages"]) > 0
 
-        # Each message in thread should have payload
+        real_message_keys = set(real["messages"][0])
+        # Each message in thread should match the real full-format top-level shape.
         for msg in mock["messages"]:
+            assert set(msg) == real_message_keys
+            _assert_thread_message_core_types(msg)
             assert "payload" in msg
+            assert "raw" not in msg
+            assert isinstance(msg["payload"], dict)
             assert "id" in msg
             assert "threadId" in msg
+            for header in msg["payload"]["headers"]:
+                assert set(header) == {"name", "value"}
+                assert all(isinstance(value, str) for value in header.values())
 
     def test_thread_get_metadata_format(self, client):
         """threads.get format=metadata messages have only {mimeType, headers} in payload."""
@@ -553,25 +571,37 @@ class TestThreadsConformance:
         mock = resp.json()
 
         assert set(mock.keys()) == set(real.keys())
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
         assert "messages" in mock
-        # Each message payload should match metadata format
+        # Every message and payload should match metadata format, not only the first.
         real_msg = real["messages"][0]
-        mock_msg = mock["messages"][0]
-        assert set(real_msg["payload"].keys()) == set(mock_msg["payload"].keys())
+        for mock_msg in mock["messages"]:
+            assert set(mock_msg) == set(real_msg)
+            _assert_thread_message_core_types(mock_msg)
+            assert set(real_msg["payload"]) == set(mock_msg["payload"])
+            assert "raw" not in mock_msg
+            for header in mock_msg["payload"]["headers"]:
+                assert set(header) == {"name", "value"}
+                assert all(isinstance(value, str) for value in header.values())
 
     def test_threads_list_structure(self, client):
         """threads.list returns items with {id, snippet, historyId}."""
         real = load_fixture("threads_list.json")
-        resp = client.get("/gmail/v1/users/me/threads")
+        # The real fixture was captured with maxResults=10.
+        resp = client.get("/gmail/v1/users/me/threads?maxResults=10")
         mock = resp.json()
 
-        assert "resultSizeEstimate" in mock
-        assert "threads" in mock
+        assert set(mock) == set(real)
+        assert isinstance(mock["resultSizeEstimate"], int)
+        assert isinstance(mock["nextPageToken"], str)
+        assert len(mock["threads"]) == len(real["threads"])
         # Each real thread item has {id, snippet, historyId}
         for item in real["threads"]:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
         for item in mock["threads"]:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
+            assert all(isinstance(value, str) for value in item.values())
 
 
 class TestSettingsConformance:
