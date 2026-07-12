@@ -637,6 +637,29 @@ class TestThreadsConformance:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
             assert all(isinstance(value, str) for value in item.values())
 
+    def test_threads_list_mixed_trash_order_fixture(self):
+        """Provider capture orders a mixed Trash thread by its visible message."""
+        default = load_fixture("threads_list_mixed_trash_default.json")
+        included = load_fixture("threads_list_mixed_trash_included.json")
+        thread_a = load_fixture("thread_get_metadata_mixed_trash_a.json")
+        thread_b = load_fixture("thread_get_metadata_mixed_trash_b.json")
+
+        assert len(thread_a["messages"]) == 2
+        assert len(thread_b["messages"]) == 1
+        a_visible, a_trashed = thread_a["messages"]
+        (b_visible,) = thread_b["messages"]
+        assert int(a_visible["internalDate"]) < int(b_visible["internalDate"])
+        assert int(b_visible["internalDate"]) < int(a_trashed["internalDate"])
+        assert "TRASH" not in a_visible["labelIds"]
+        assert "TRASH" not in b_visible["labelIds"]
+        assert "TRASH" in a_trashed["labelIds"]
+
+        expected_order = [thread_b["id"], thread_a["id"]]
+        assert [thread["id"] for thread in default["threads"]] == expected_order
+        assert [thread["id"] for thread in included["threads"]] == expected_order
+        assert default["resultSizeEstimate"] == 2
+        assert included["resultSizeEstimate"] == 2
+
 
 class TestSettingsConformance:
     def test_filters_list_empty_returns_empty_object(self, client):

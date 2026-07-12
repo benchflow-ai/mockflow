@@ -1,0 +1,30 @@
+{
+  "id": "19f569a1f4cfbf48",
+  "historyId": "10504",
+  "messages": [
+    {
+      "id": "19f569a5d2a5e0a7",
+      "threadId": "19f569a1f4cfbf48",
+      "labelIds": [
+        "UNREAD",
+        "IMPORTANT",
+        "SENT",
+        "INBOX"
+      ],
+      "snippet": "visible message B1",
+      "historyId": "10504",
+      "internalDate": "1783864384000",
+      "sizeEstimate": 596,
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          {
+            "name": "Subject",
+            "value": "[env0-fixture] mixed-hidden-B"
+          }
+        ]
+      }
+    }
+  ],
+  "_captured_at": "2026-07-12T13:54:49.201377+00:00"
+}

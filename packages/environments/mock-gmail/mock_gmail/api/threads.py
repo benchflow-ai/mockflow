@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from mock_gmail.models import Thread, Message, MessageLabel
@@ -37,10 +37,26 @@ def list_threads(
     db: Session = Depends(get_db),
     _user_id: str = Depends(resolve_user_id),
 ):
+    latest_visible_message_date = func.max(
+        case(
+            (
+                Message.is_trash.is_(False) & Message.is_spam.is_(False),
+                Message.internal_date,
+            ),
+            else_=None,
+        )
+    )
+    # A provider capture shows that a mixed Trash thread stays anchored to its
+    # latest visible message with includeSpamTrash either false or true. Fully
+    # hidden threads use their latest member as a deterministic fallback.
+    thread_sort_date = func.coalesce(
+        latest_visible_message_date,
+        func.max(Message.internal_date),
+    )
     latest_message = (
         db.query(
             Message.thread_id.label("thread_id"),
-            func.max(Message.internal_date).label("internal_date"),
+            thread_sort_date.label("internal_date"),
         )
         .filter(Message.user_id == _user_id)
         .group_by(Message.thread_id)

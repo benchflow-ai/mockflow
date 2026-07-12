@@ -232,8 +232,66 @@ class TestThreadsListBehavior:
 
         assert _listed_thread_ids(default_response) == ["thread-visible"]
         assert default_response.json()["resultSizeEstimate"] == 1
-        assert set(_listed_thread_ids(included_response)) == set(scenarios)
+        # Fully hidden threads use their latest member message as the
+        # deterministic fallback sort timestamp when explicitly included.
+        assert _listed_thread_ids(included_response) == [
+            "thread-spam-only",
+            "thread-trash-only",
+            "thread-visible",
+        ]
         assert included_response.json()["resultSizeEstimate"] == 3
+
+    def test_newer_trashed_message_does_not_change_thread_order(
+        self, client, db_session
+    ):
+        user_id = _user_id(db_session)
+        subject_prefix = "Mixed hidden ordering 6e4b2"
+        _add_thread(
+            db_session,
+            user_id,
+            "thread-mixed-trash-a",
+            [
+                _message_spec(
+                    "message-mixed-trash-a-visible",
+                    _at(5, 1),
+                    "visible message A1",
+                    ["INBOX"],
+                ),
+                _message_spec(
+                    "message-mixed-trash-a-hidden",
+                    _at(5, 3),
+                    "hidden message A2",
+                    ["TRASH"],
+                ),
+            ],
+            subject=f"{subject_prefix}-A",
+        )
+        _add_thread(
+            db_session,
+            user_id,
+            "thread-mixed-trash-b",
+            [
+                _message_spec(
+                    "message-mixed-trash-b-visible",
+                    _at(5, 2),
+                    "visible message B1",
+                    ["INBOX"],
+                )
+            ],
+            subject=f"{subject_prefix}-B",
+        )
+
+        expected = ["thread-mixed-trash-b", "thread-mixed-trash-a"]
+        for include_spam_trash in (False, True):
+            response = client.get(
+                "/gmail/v1/users/me/threads",
+                params={
+                    "q": f'subject:"{subject_prefix}"',
+                    "includeSpamTrash": str(include_spam_trash).lower(),
+                },
+            )
+            assert _listed_thread_ids(response) == expected
+            assert response.json()["resultSizeEstimate"] == 2
 
     def test_latest_message_order_and_pagination_are_stable(self, client, db_session):
         user_id = _user_id(db_session)
