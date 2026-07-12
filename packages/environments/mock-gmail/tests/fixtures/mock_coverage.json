@@ -168,7 +168,9 @@
       "implemented": true,
       "fixture": "threads_list.json",
       "tests": [
-        "tests/test_api.py::TestThreads::test_list_threads"
+        "tests/test_api.py::TestThreads::test_list_threads",
+        "tests/test_conformance.py::TestThreadsConformance::test_threads_list_structure",
+        "tests/test_threads.py::TestThreadsListBehavior"
       ]
     },
     {
@@ -180,7 +182,9 @@
       "fixture": "thread_get_full.json",
       "tests": [
         "tests/test_api.py::TestThreads::test_get_thread",
-        "tests/test_conformance.py::TestThreadsConformance::test_thread_get_structure"
+        "tests/test_conformance.py::TestThreadsConformance::test_thread_get_structure",
+        "tests/test_conformance.py::TestThreadsConformance::test_thread_get_metadata_format",
+        "tests/test_threads.py::TestThreadsGetBehavior"
       ]
     },
     {
