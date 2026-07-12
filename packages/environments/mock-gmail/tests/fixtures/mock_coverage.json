@@ -184,6 +184,7 @@
         "tests/test_api.py::TestThreads::test_get_thread",
         "tests/test_conformance.py::TestThreadsConformance::test_thread_get_structure",
         "tests/test_conformance.py::TestThreadsConformance::test_thread_get_metadata_format",
+        "tests/test_conformance.py::TestThreadsConformance::test_thread_get_minimal_format",
         "tests/test_threads.py::TestThreadsGetBehavior"
       ]
     },

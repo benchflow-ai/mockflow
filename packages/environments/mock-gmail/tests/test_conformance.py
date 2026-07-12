@@ -585,6 +585,40 @@ class TestThreadsConformance:
                 assert set(header) == {"name", "value"}
                 assert all(isinstance(value, str) for value in header.values())
 
+    def test_thread_get_minimal_format(self, client):
+        """threads.get format=minimal omits payload and raw from every message."""
+        real = load_fixture("thread_get_minimal.json")
+        resp = client.get("/gmail/v1/users/me/threads")
+        threads = resp.json()["threads"]
+        if not threads:
+            pytest.skip("No threads")
+        thread_id = threads[0]["id"]
+
+        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}?format=minimal")
+        mock = resp.json()
+
+        assert set(mock) == set(real)
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
+        assert "messages" in mock
+
+        # The provider fixture contains two messages and records their API order.
+        assert len(real["messages"]) >= 2
+        real_dates = [int(message["internalDate"]) for message in real["messages"]]
+        assert real_dates == sorted(real_dates)
+
+        real_message_keys = set(real["messages"][0])
+        for real_msg in real["messages"]:
+            assert set(real_msg) == real_message_keys
+            _assert_thread_message_core_types(real_msg)
+            assert "payload" not in real_msg
+            assert "raw" not in real_msg
+        for mock_msg in mock["messages"]:
+            assert set(mock_msg) == real_message_keys
+            _assert_thread_message_core_types(mock_msg)
+            assert "payload" not in mock_msg
+            assert "raw" not in mock_msg
+
     def test_threads_list_structure(self, client):
         """threads.list returns items with {id, snippet, historyId}."""
         real = load_fixture("threads_list.json")
