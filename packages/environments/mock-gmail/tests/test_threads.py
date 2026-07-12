@@ -159,11 +159,12 @@ class TestThreadsListBehavior:
         }
         assert response.json()["resultSizeEstimate"] == 2
 
-    def test_all_labels_may_be_on_different_messages(self, client, db_session):
+    def test_all_labels_must_be_on_the_same_message(self, client, db_session):
         user_id = _user_id(db_session)
         marker = "thread-label-union-135b"
         scenarios = {
-            "thread-label-both": (["INBOX"], ["STARRED"]),
+            "thread-label-same-message": (["INBOX", "STARRED"], []),
+            "thread-label-split": (["INBOX"], ["STARRED"]),
             "thread-label-inbox-only": (["INBOX"], ["INBOX"]),
             "thread-label-starred-only": (["STARRED"], ["STARRED"]),
         }
@@ -192,7 +193,7 @@ class TestThreadsListBehavior:
             ],
         )
 
-        assert _listed_thread_ids(response) == ["thread-label-both"]
+        assert _listed_thread_ids(response) == ["thread-label-same-message"]
         assert response.json()["resultSizeEstimate"] == 1
 
     def test_include_spam_trash_controls_hidden_threads(self, client, db_session):

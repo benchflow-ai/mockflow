@@ -170,6 +170,7 @@
       "tests": [
         "tests/test_api.py::TestThreads::test_list_threads",
         "tests/test_conformance.py::TestThreadsConformance::test_threads_list_structure",
+        "tests/test_conformance.py::TestThreadsConformance::test_threads_list_label_filters_share_one_message_fixture",
         "tests/test_conformance.py::TestThreadsConformance::test_threads_list_mixed_trash_order_fixture",
         "tests/test_conformance.py::TestThreadsConformance::test_threads_list_mixed_spam_order_fixture",
         "tests/test_threads.py::TestThreadsListBehavior"

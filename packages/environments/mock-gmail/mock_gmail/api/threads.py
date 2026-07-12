@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import case, func
+from sqlalchemy import and_, case, func
 from sqlalchemy.orm import Session
 
 from mock_gmail.models import Thread, Message, MessageLabel
@@ -76,20 +76,23 @@ def list_threads(
                 lid = lid.strip()
                 if lid:
                     normalized.append(lid)
+        message_label_filters = []
         for lid in normalized:
-            query = query.filter(
-                Thread.messages.any(
-                    Message.labels.any(MessageLabel.label_id == lid)
-                    if lid not in ("UNREAD", "STARRED", "TRASH", "SPAM", "DRAFT", "SENT")
-                    else (
-                        Message.is_read == False if lid == "UNREAD"
-                        else Message.is_starred == True if lid == "STARRED"
-                        else Message.is_trash == True if lid == "TRASH"
-                        else Message.is_spam == True if lid == "SPAM"
-                        else Message.is_draft == True if lid == "DRAFT"
-                        else Message.is_sent == True
-                    )
+            message_label_filters.append(
+                Message.labels.any(MessageLabel.label_id == lid)
+                if lid not in ("UNREAD", "STARRED", "TRASH", "SPAM", "DRAFT", "SENT")
+                else (
+                    Message.is_read.is_(False) if lid == "UNREAD"
+                    else Message.is_starred.is_(True) if lid == "STARRED"
+                    else Message.is_trash.is_(True) if lid == "TRASH"
+                    else Message.is_spam.is_(True) if lid == "SPAM"
+                    else Message.is_draft.is_(True) if lid == "DRAFT"
+                    else Message.is_sent.is_(True)
                 )
+            )
+        if message_label_filters:
+            query = query.filter(
+                Thread.messages.any(and_(*message_label_filters))
             )
 
     if not includeSpamTrash:

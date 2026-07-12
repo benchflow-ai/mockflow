@@ -637,6 +637,27 @@ class TestThreadsConformance:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
             assert all(isinstance(value, str) for value in item.values())
 
+    def test_threads_list_label_filters_share_one_message_fixture(self):
+        """Provider requires one member message to satisfy all label IDs."""
+        same_inbox = load_fixture("threads_list_labels_same_inbox_message.json")
+        same_trash = load_fixture("threads_list_labels_same_trash_message.json")
+        split = load_fixture("threads_list_labels_split_across_messages.json")
+        thread = load_fixture("thread_get_metadata_mixed_trash_a.json")
+
+        visible, trashed = thread["messages"]
+        assert {"INBOX", "SENT"} <= set(visible["labelIds"])
+        assert {"TRASH", "SENT"} <= set(trashed["labelIds"])
+        assert not any(
+            {"INBOX", "TRASH"} <= set(message["labelIds"])
+            for message in thread["messages"]
+        )
+
+        assert [item["id"] for item in same_inbox["threads"]] == [thread["id"]]
+        assert [item["id"] for item in same_trash["threads"]] == [thread["id"]]
+        assert same_inbox["resultSizeEstimate"] == 1
+        assert same_trash["resultSizeEstimate"] == 1
+        assert split == {"resultSizeEstimate": 0}
+
     def test_threads_list_mixed_trash_order_fixture(self):
         """Provider capture orders a mixed Trash thread by its visible message."""
         default = load_fixture("threads_list_mixed_trash_default.json")
