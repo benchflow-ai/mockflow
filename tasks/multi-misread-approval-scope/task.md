@@ -29,7 +29,7 @@ verifier:
   reward_range:
   - -1.0
   - 1.0
-environment:
+sandbox:
   cpus: 1
   memory_mb: 2048
   network_mode: public
