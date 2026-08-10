@@ -253,7 +253,9 @@ def list_messages(
             elif lid == "SENT":
                 query = query.filter(Message.is_sent == True)
             else:
-                query = query.join(MessageLabel).filter(MessageLabel.label_id == lid)
+                query = query.filter(
+                    Message.labels.any(MessageLabel.label_id == lid)
+                )
 
     if q:
         filters = _parse_search_query(q)

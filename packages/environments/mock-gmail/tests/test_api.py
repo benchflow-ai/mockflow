@@ -37,6 +37,39 @@ class TestMessages:
         assert "id" in data["messages"][0]
         assert "threadId" in data["messages"][0]
 
+    def test_list_messages_with_multiple_labels(self, client):
+        first_label_id = client.post(
+            "/gmail/v1/users/me/labels", json={"name": "First filter label"}
+        ).json()["id"]
+        second_label_id = client.post(
+            "/gmail/v1/users/me/labels", json={"name": "Second filter label"}
+        ).json()["id"]
+
+        matching_message = client.post(
+            "/gmail/v1/users/me/messages",
+            json={
+                "raw": _raw(subject="Matches both labels"),
+                "labelIds": [first_label_id, second_label_id],
+            },
+        ).json()
+        client.post(
+            "/gmail/v1/users/me/messages",
+            json={
+                "raw": _raw(subject="Matches only one label"),
+                "labelIds": [first_label_id],
+            },
+        )
+
+        resp = client.get(
+            "/gmail/v1/users/me/messages",
+            params=[("labelIds", first_label_id), ("labelIds", second_label_id)],
+        )
+
+        assert resp.status_code == 200
+        assert [message["id"] for message in resp.json()["messages"]] == [
+            matching_message["id"]
+        ]
+
     def test_get_message(self, client):
         # First list to get an ID
         resp = client.get("/gmail/v1/users/me/messages")
