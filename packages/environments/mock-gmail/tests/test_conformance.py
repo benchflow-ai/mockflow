@@ -71,6 +71,14 @@ def _assert_any_shape(real_items: list, mock_item, path: str, strict: bool) -> N
     pytest.fail(f"Mock item at {path} matches no fixture item shape: {'; '.join(errors)}")
 
 
+def _assert_thread_message_core_types(message: dict) -> None:
+    for key in ("id", "threadId", "snippet", "historyId", "internalDate"):
+        assert isinstance(message[key], str)
+    assert isinstance(message["labelIds"], list)
+    assert all(isinstance(label_id, str) for label_id in message["labelIds"])
+    assert isinstance(message["sizeEstimate"], int)
+
+
 class TestProfileConformance:
     def test_profile_keys(self, client):
         """Profile response has same keys as real Gmail."""
@@ -525,20 +533,30 @@ class TestThreadsConformance:
             pytest.skip("No threads")
         thread_id = threads[0]["id"]
 
-        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}")
+        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}?format=full")
         mock = resp.json()
 
         # Real threads.get returns {id, historyId, messages} — no snippet
         real = load_fixture("thread_get_full.json")
         assert set(mock.keys()) == set(real.keys())
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
         assert "messages" in mock
         assert len(mock["messages"]) > 0
 
-        # Each message in thread should have payload
+        real_message_keys = set(real["messages"][0])
+        # Each message in thread should match the real full-format top-level shape.
         for msg in mock["messages"]:
+            assert set(msg) == real_message_keys
+            _assert_thread_message_core_types(msg)
             assert "payload" in msg
+            assert "raw" not in msg
+            assert isinstance(msg["payload"], dict)
             assert "id" in msg
             assert "threadId" in msg
+            for header in msg["payload"]["headers"]:
+                assert set(header) == {"name", "value"}
+                assert all(isinstance(value, str) for value in header.values())
 
     def test_thread_get_metadata_format(self, client):
         """threads.get format=metadata messages have only {mimeType, headers} in payload."""
@@ -553,25 +571,138 @@ class TestThreadsConformance:
         mock = resp.json()
 
         assert set(mock.keys()) == set(real.keys())
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
         assert "messages" in mock
-        # Each message payload should match metadata format
+        # Every message and payload should match metadata format, not only the first.
         real_msg = real["messages"][0]
-        mock_msg = mock["messages"][0]
-        assert set(real_msg["payload"].keys()) == set(mock_msg["payload"].keys())
+        for mock_msg in mock["messages"]:
+            assert set(mock_msg) == set(real_msg)
+            _assert_thread_message_core_types(mock_msg)
+            assert set(real_msg["payload"]) == set(mock_msg["payload"])
+            assert "raw" not in mock_msg
+            for header in mock_msg["payload"]["headers"]:
+                assert set(header) == {"name", "value"}
+                assert all(isinstance(value, str) for value in header.values())
+
+    def test_thread_get_minimal_format(self, client):
+        """threads.get format=minimal omits payload and raw from every message."""
+        real = load_fixture("thread_get_minimal.json")
+        resp = client.get("/gmail/v1/users/me/threads")
+        threads = resp.json()["threads"]
+        if not threads:
+            pytest.skip("No threads")
+        thread_id = threads[0]["id"]
+
+        resp = client.get(f"/gmail/v1/users/me/threads/{thread_id}?format=minimal")
+        mock = resp.json()
+
+        assert set(mock) == set(real)
+        assert isinstance(mock["id"], str)
+        assert isinstance(mock["historyId"], str)
+        assert "messages" in mock
+
+        # The provider fixture contains two messages and records their API order.
+        assert len(real["messages"]) >= 2
+        real_dates = [int(message["internalDate"]) for message in real["messages"]]
+        assert real_dates == sorted(real_dates)
+
+        real_message_keys = set(real["messages"][0])
+        for real_msg in real["messages"]:
+            assert set(real_msg) == real_message_keys
+            _assert_thread_message_core_types(real_msg)
+            assert "payload" not in real_msg
+            assert "raw" not in real_msg
+        for mock_msg in mock["messages"]:
+            assert set(mock_msg) == real_message_keys
+            _assert_thread_message_core_types(mock_msg)
+            assert "payload" not in mock_msg
+            assert "raw" not in mock_msg
 
     def test_threads_list_structure(self, client):
         """threads.list returns items with {id, snippet, historyId}."""
         real = load_fixture("threads_list.json")
-        resp = client.get("/gmail/v1/users/me/threads")
+        # The real fixture was captured with maxResults=10.
+        resp = client.get("/gmail/v1/users/me/threads?maxResults=10")
         mock = resp.json()
 
-        assert "resultSizeEstimate" in mock
-        assert "threads" in mock
+        assert set(mock) == set(real)
+        assert isinstance(mock["resultSizeEstimate"], int)
+        assert isinstance(mock["nextPageToken"], str)
+        assert len(mock["threads"]) == len(real["threads"])
         # Each real thread item has {id, snippet, historyId}
         for item in real["threads"]:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
         for item in mock["threads"]:
             assert set(item.keys()) == {"id", "snippet", "historyId"}
+            assert all(isinstance(value, str) for value in item.values())
+
+    def test_threads_list_label_filters_share_one_message_fixture(self):
+        """Provider requires one member message to satisfy all label IDs."""
+        same_inbox = load_fixture("threads_list_labels_same_inbox_message.json")
+        same_trash = load_fixture("threads_list_labels_same_trash_message.json")
+        split = load_fixture("threads_list_labels_split_across_messages.json")
+        thread = load_fixture("thread_get_metadata_mixed_trash_a.json")
+
+        visible, trashed = thread["messages"]
+        assert {"INBOX", "SENT"} <= set(visible["labelIds"])
+        assert {"TRASH", "SENT"} <= set(trashed["labelIds"])
+        assert not any(
+            {"INBOX", "TRASH"} <= set(message["labelIds"])
+            for message in thread["messages"]
+        )
+
+        assert [item["id"] for item in same_inbox["threads"]] == [thread["id"]]
+        assert [item["id"] for item in same_trash["threads"]] == [thread["id"]]
+        assert same_inbox["resultSizeEstimate"] == 1
+        assert same_trash["resultSizeEstimate"] == 1
+        assert split == {"resultSizeEstimate": 0}
+
+    def test_threads_list_mixed_trash_order_fixture(self):
+        """Provider capture orders a mixed Trash thread by its visible message."""
+        default = load_fixture("threads_list_mixed_trash_default.json")
+        included = load_fixture("threads_list_mixed_trash_included.json")
+        thread_a = load_fixture("thread_get_metadata_mixed_trash_a.json")
+        thread_b = load_fixture("thread_get_metadata_mixed_trash_b.json")
+
+        assert len(thread_a["messages"]) == 2
+        assert len(thread_b["messages"]) == 1
+        a_visible, a_trashed = thread_a["messages"]
+        (b_visible,) = thread_b["messages"]
+        assert int(a_visible["internalDate"]) < int(b_visible["internalDate"])
+        assert int(b_visible["internalDate"]) < int(a_trashed["internalDate"])
+        assert "TRASH" not in a_visible["labelIds"]
+        assert "TRASH" not in b_visible["labelIds"]
+        assert "TRASH" in a_trashed["labelIds"]
+
+        expected_order = [thread_b["id"], thread_a["id"]]
+        assert [thread["id"] for thread in default["threads"]] == expected_order
+        assert [thread["id"] for thread in included["threads"]] == expected_order
+        assert default["resultSizeEstimate"] == 2
+        assert included["resultSizeEstimate"] == 2
+
+    def test_threads_list_mixed_spam_order_fixture(self):
+        """Provider capture orders a mixed Spam thread by its visible message."""
+        default = load_fixture("threads_list_mixed_spam_default.json")
+        included = load_fixture("threads_list_mixed_spam_included.json")
+        thread_c = load_fixture("thread_get_metadata_mixed_spam_c.json")
+        thread_d = load_fixture("thread_get_metadata_mixed_spam_d.json")
+
+        assert len(thread_c["messages"]) == 2
+        assert len(thread_d["messages"]) == 1
+        c_visible, c_spam = thread_c["messages"]
+        (d_visible,) = thread_d["messages"]
+        assert int(c_visible["internalDate"]) < int(d_visible["internalDate"])
+        assert int(d_visible["internalDate"]) < int(c_spam["internalDate"])
+        assert "SPAM" not in c_visible["labelIds"]
+        assert "SPAM" not in d_visible["labelIds"]
+        assert "SPAM" in c_spam["labelIds"]
+
+        expected_order = [thread_d["id"], thread_c["id"]]
+        assert [thread["id"] for thread in default["threads"]] == expected_order
+        assert [thread["id"] for thread in included["threads"]] == expected_order
+        assert default["resultSizeEstimate"] == 2
+        assert included["resultSizeEstimate"] == 2
 
 
 class TestSettingsConformance:

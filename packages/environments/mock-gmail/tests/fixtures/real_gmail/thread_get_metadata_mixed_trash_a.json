@@ -1,0 +1,52 @@
+{
+  "id": "19f56999f64f85dd",
+  "historyId": "10574",
+  "messages": [
+    {
+      "id": "19f5699da6162829",
+      "threadId": "19f56999f64f85dd",
+      "labelIds": [
+        "IMPORTANT",
+        "SENT",
+        "INBOX"
+      ],
+      "snippet": "visible message A1",
+      "historyId": "10574",
+      "internalDate": "1783864351000",
+      "sizeEstimate": 596,
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          {
+            "name": "Subject",
+            "value": "[env0-fixture] mixed-hidden-A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "19f569a79794e0f1",
+      "threadId": "19f56999f64f85dd",
+      "labelIds": [
+        "UNREAD",
+        "IMPORTANT",
+        "TRASH",
+        "SENT"
+      ],
+      "snippet": "hidden message A2 On Sun, Jul 12, 2026 at 9:52 PM Fixture User &lt;fixture-user@example.com&gt; wrote: visible message A1",
+      "historyId": "10571",
+      "internalDate": "1783864391000",
+      "sizeEstimate": 1427,
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          {
+            "name": "Subject",
+            "value": "Re: [env0-fixture] mixed-hidden-A"
+          }
+        ]
+      }
+    }
+  ],
+  "_captured_at": "2026-07-12T13:54:49.469882+00:00"
+}

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, case, func
 from sqlalchemy.orm import Session
 
 from mock_gmail.models import Thread, Message, MessageLabel
@@ -34,7 +37,36 @@ def list_threads(
     db: Session = Depends(get_db),
     _user_id: str = Depends(resolve_user_id),
 ):
-    query = db.query(Thread).filter(Thread.user_id == _user_id)
+    latest_visible_message_date = func.max(
+        case(
+            (
+                Message.is_trash.is_(False) & Message.is_spam.is_(False),
+                Message.internal_date,
+            ),
+            else_=None,
+        )
+    )
+    # Provider captures show that mixed Trash and Spam threads stay anchored to
+    # their latest visible message with includeSpamTrash either false or true.
+    # Fully hidden threads use their latest member as a deterministic fallback.
+    thread_sort_date = func.coalesce(
+        latest_visible_message_date,
+        func.max(Message.internal_date),
+    )
+    latest_message = (
+        db.query(
+            Message.thread_id.label("thread_id"),
+            thread_sort_date.label("internal_date"),
+        )
+        .filter(Message.user_id == _user_id)
+        .group_by(Message.thread_id)
+        .subquery()
+    )
+    query = (
+        db.query(Thread)
+        .join(latest_message, latest_message.c.thread_id == Thread.id)
+        .filter(Thread.user_id == _user_id)
+    )
 
     if labelIds:
         # Normalize: handle both repeated params and comma-separated
@@ -44,20 +76,23 @@ def list_threads(
                 lid = lid.strip()
                 if lid:
                     normalized.append(lid)
+        message_label_filters = []
         for lid in normalized:
-            query = query.filter(
-                Thread.messages.any(
-                    Message.labels.any(MessageLabel.label_id == lid)
-                    if lid not in ("UNREAD", "STARRED", "TRASH", "SPAM", "DRAFT", "SENT")
-                    else (
-                        Message.is_read == False if lid == "UNREAD"
-                        else Message.is_starred == True if lid == "STARRED"
-                        else Message.is_trash == True if lid == "TRASH"
-                        else Message.is_spam == True if lid == "SPAM"
-                        else Message.is_draft == True if lid == "DRAFT"
-                        else Message.is_sent == True
-                    )
+            message_label_filters.append(
+                Message.labels.any(MessageLabel.label_id == lid)
+                if lid not in ("UNREAD", "STARRED", "TRASH", "SPAM", "DRAFT", "SENT")
+                else (
+                    Message.is_read.is_(False) if lid == "UNREAD"
+                    else Message.is_starred.is_(True) if lid == "STARRED"
+                    else Message.is_trash.is_(True) if lid == "TRASH"
+                    else Message.is_spam.is_(True) if lid == "SPAM"
+                    else Message.is_draft.is_(True) if lid == "DRAFT"
+                    else Message.is_sent.is_(True)
                 )
+            )
+        if message_label_filters:
+            query = query.filter(
+                Thread.messages.any(and_(*message_label_filters))
             )
 
     if not includeSpamTrash:
@@ -86,7 +121,15 @@ def list_threads(
             pass
 
     total = query.count()
-    threads = query.offset(offset).limit(maxResults).all()
+    threads = (
+        query.order_by(
+            latest_message.c.internal_date.desc(),
+            Thread.id.asc(),
+        )
+        .offset(offset)
+        .limit(maxResults)
+        .all()
+    )
 
     next_token = None
     if offset + maxResults < total:
@@ -108,7 +151,7 @@ def list_threads(
 def get_thread(
     userId: str,
     threadId: str,
-    format: str = Query("full"),
+    format: Literal["full", "metadata", "minimal"] = Query("full"),
     db: Session = Depends(get_db),
     _user_id: str = Depends(resolve_user_id),
 ):
@@ -119,9 +162,12 @@ def get_thread(
     msgs = (
         db.query(Message)
         .filter(Message.thread_id == threadId, Message.user_id == _user_id)
-        .order_by(Message.internal_date.asc())
+        .order_by(Message.internal_date.asc(), Message.id.asc())
         .all()
     )
+    if not msgs:
+        # Empty Thread rows are orphaned mock state, not public Gmail resources.
+        raise HTTPException(404, f"Thread {threadId!r} not found")
 
     # Real Gmail threads.get returns {id, historyId, messages} — no snippet (Bug 2)
     return {

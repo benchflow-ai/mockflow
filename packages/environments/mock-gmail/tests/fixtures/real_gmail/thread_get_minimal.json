@@ -1,0 +1,33 @@
+{
+  "id": "19f568dea810b4ec",
+  "historyId": "10165",
+  "messages": [
+    {
+      "id": "19f568e4248d0ed2",
+      "threadId": "19f568dea810b4ec",
+      "labelIds": [
+        "IMPORTANT",
+        "SENT",
+        "INBOX"
+      ],
+      "snippet": "synthetic fixture message one",
+      "historyId": "10129",
+      "internalDate": "1783863591000",
+      "sizeEstimate": 627
+    },
+    {
+      "id": "19f568e69c16a0f5",
+      "threadId": "19f568dea810b4ec",
+      "labelIds": [
+        "IMPORTANT",
+        "SENT",
+        "INBOX"
+      ],
+      "snippet": "synthetic fixture message two On Sun, Jul 12, 2026 at 9:39 PM Fixture User &lt;fixture-user@example.com&gt; wrote: synthetic fixture message one",
+      "historyId": "10165",
+      "internalDate": "1783863600000",
+      "sizeEstimate": 1482
+    }
+  ],
+  "_captured_at": "2026-07-12T13:42:41.532585+00:00"
+}

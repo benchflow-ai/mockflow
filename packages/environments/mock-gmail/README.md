@@ -14,7 +14,7 @@ Mock Gmail provides a safe, fully stateful Gmail environment where agents can be
 - **Full MIME/RFC 2822 support** — agents can send raw base64url-encoded emails exactly like the real API
 - **Stateful SQLite backend** — persistent CRUD, multi-user mailboxes, local delivery between users
 - **Snapshot/restore** — save and reset DB state for deterministic evaluation runs
-- **35 golden fixtures** captured from the real Gmail API with conformance tests validating response shapes match Gmail behavior
+- **47 golden fixtures** captured from the real Gmail API with conformance tests validating response shapes match Gmail behavior
 - **Task-aware seeding** for repo-level example tasks, with DB state diffs and action logs for verifiers
 - **MCP server** — expose all endpoints as MCP tools via `fastapi-mcp`
 - **Gymnasium environment** — `GmailEnv` for RL-style agent training
@@ -93,6 +93,7 @@ uv run --extra dev pytest tests -q
 |-------|----------------|
 | `test_api.py` | Full CRUD for messages, threads, labels, drafts, admin, and task surfaces |
 | `test_conformance.py` | Response-shape validation against real Gmail fixtures |
+| `test_threads.py` | Thread list/get filtering, ordering, pagination, formats, and orphan handling |
 | `test_settings.py` | Settings sub-resources: filters, sendAs, forwarding, delegates, vacation, IMAP, POP, language |
 | `test_mime.py` | RFC 2822 build/parse, base64url encoding, message-ID generation |
 | `test_snapshots.py` | Snapshot/reset behavior |
